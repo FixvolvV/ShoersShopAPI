@@ -4,7 +4,10 @@ __all__ = (
     "Cart",
     "Favorite",
     "Order",
-    "Review"
+    "Review",
+    "Product",
+    "Size",
+    "Brand"
 )
 
 from .base import Base
@@ -13,3 +16,6 @@ from .cart import Cart
 from .favorite import Favorite
 from .order import Order
 from .review import Review
+from .product import Product
+from .size import Size
+from .brand import Brand

@@ -10,6 +10,7 @@ from sqlalchemy import ForeignKey
 
 if TYPE_CHECKING:
     from .user import User
+    from .product import Product
 
 class UserRelationMixin:
     _user_id_nullable: bool = False
@@ -29,5 +30,26 @@ class UserRelationMixin:
         return relationship (
             "User",
             back_populates=cls._user_back_populates,
+            lazy="noload"
+        )
+
+class ProductRelationMixin:
+    _product_id_nullable: bool = False
+    _product_id_unique: bool = False
+    _product_back_populates: str | None = None
+
+    @declared_attr
+    def product_id(cls) -> Mapped[str]:
+        return mapped_column(
+            ForeignKey("products.id"),
+            unique=cls._product_id_unique,
+            nullable=cls._product_id_nullable
+        )
+    
+    @declared_attr
+    def product(cls) -> Mapped["Product"]:
+        return relationship (
+            "Product",
+            back_populates=cls._product_back_populates,
             lazy="noload"
         )

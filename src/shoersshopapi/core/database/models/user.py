@@ -13,6 +13,8 @@ from sqlalchemy.orm import (
 )
 from sqlalchemy.ext.hybrid import hybrid_property
 
+from shoersshopapi.core.database.models import favorite
+
 from .base import Base
 
 from shoersshopapi.core.utils.enum import Role
@@ -20,6 +22,8 @@ from shoersshopapi.core.utils.enum import Role
 if TYPE_CHECKING:
     from .order import Order
     from .review import Review
+    from .favorite import Favorite
+    from .cart import Cart
 
 class User(Base):
 
@@ -32,13 +36,23 @@ class User(Base):
     social_link: Mapped[List[str]] = mapped_column(JSON, default=list)
     role: Mapped[Role] = mapped_column(default=Role.user,  server_default=text("'user'"))
 
-    reviews: Mapped[List["Review"]] = relationship(
+    reviews: Mapped[List["Review"] | None] = relationship(
         back_populates="Review",
         lazy="joined"
     )
 
-    orders: Mapped[List["Order"]] = relationship(
+    orders: Mapped[List["Order"] | None] = relationship(
         back_populates="Order",
+        lazy="joined"
+    )
+
+    favorites: Mapped[List["Favorite"] | None] = relationship(
+        back_populates="Favorite",
+        lazy="joined"
+    )
+
+    cart: Mapped["Cart"] = relationship(
+        back_populates="Cart",
         lazy="joined"
     )
 

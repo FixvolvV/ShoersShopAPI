@@ -15,3 +15,10 @@ class Rating(Enum):
     normal = 3
     good = 4
     very_good = 5
+
+class Color(Enum):
+    black = 1
+    white = 2
+    blue = 3
+    gray = 4
+    
