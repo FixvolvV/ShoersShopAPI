@@ -1,4 +1,4 @@
-from src.shoersshopapi.core.database.models.mixin import UserRelationMixin
+from shoersshopapi.core.database.models.mixin import UserRelationMixin
 
 from .base import Base
 

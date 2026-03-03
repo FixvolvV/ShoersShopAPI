@@ -15,14 +15,13 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from .base import Base
 
-from src.shoersshopapi.core.utils.enum import Role
+from shoersshopapi.core.utils.enum import Role
 
 if TYPE_CHECKING:
     from .order import Order
     from .review import Review
 
 class User(Base):
-    _order_back_populates = Base.__tablename__
 
     phone: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str] = mapped_column(unique=True)

@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
 )
 
-from src.shoersshopapi.core.settings import settings
+from shoersshopapi.core.settings import settings
 
 class Database:
     def __init__(

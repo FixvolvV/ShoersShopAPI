@@ -9,7 +9,7 @@ from sqlalchemy.orm import (
 from .base import Base
 from .mixin import UserRelationMixin
 
-from src.shoersshopapi.core.utils.enum import Rating
+from shoersshopapi.core.utils.enum import Rating
 
 
 class Review(UserRelationMixin, Base):

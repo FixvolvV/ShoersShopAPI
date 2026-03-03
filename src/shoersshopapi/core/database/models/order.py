@@ -11,7 +11,7 @@ from datetime import datetime
 from .base import Base
 from .mixin import UserRelationMixin
 
-from src.shoersshopapi.core.utils.enum import Status
+from shoersshopapi.core.utils.enum import Status
 
 
 class Order(UserRelationMixin, Base):
