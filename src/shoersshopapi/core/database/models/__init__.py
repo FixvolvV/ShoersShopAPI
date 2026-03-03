@@ -8,7 +8,9 @@ __all__ = (
     "Product",
     "Size",
     "Brand",
-    "Address"
+    "Address",
+    "OrderItem",
+    "CartItem"
 )
 
 from .base import Base
@@ -21,3 +23,7 @@ from .product import Product
 from .size import Size
 from .brand import Brand
 from .address import Address
+from .association import (
+    OrderItem,
+    CartItem
+)

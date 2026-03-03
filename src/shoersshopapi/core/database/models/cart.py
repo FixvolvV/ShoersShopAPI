@@ -1,7 +1,28 @@
-from shoersshopapi.core.database.models.mixin import UserRelationMixin
+from typing import (
+    TYPE_CHECKING,
+    List
+)
+
+from sqlalchemy.orm import (
+    Mapped,
+    relationship,
+)
 
 from .base import Base
+from .mixin import UserRelationMixin
+
+
+if TYPE_CHECKING:
+    from .product import Product
+    
+
 
 class Cart(UserRelationMixin, Base):
     _user_back_populates = "carts"
     _user_id_unique = True
+
+    products: Mapped[List["Product"]] = relationship (
+        secondary="cartitems",
+        back_populates="products",
+        lazy="joined"
+    )

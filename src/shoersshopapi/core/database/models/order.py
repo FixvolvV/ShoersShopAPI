@@ -1,5 +1,6 @@
 from typing import (
-    TYPE_CHECKING
+    TYPE_CHECKING,
+    List
 )
 
 from sqlalchemy import (
@@ -21,6 +22,7 @@ from shoersshopapi.core.utils.enum import Status
 
 if TYPE_CHECKING:
     from .address import Address
+    from .product import Product
 
 class Order(UserRelationMixin, Base):
     _user_back_populates = "orders"
@@ -28,14 +30,16 @@ class Order(UserRelationMixin, Base):
     order_date: Mapped[datetime]
     total_amount: Mapped[int]
     status: Mapped[Status] = mapped_column(default=Status.confirmation,  server_default=text("'confirmation'"))
-
-    address_id: Mapped[str] = mapped_column(
-        ForeignKey("addresses.id"),
-        nullable=False
-    )
+    address_id: Mapped[str] = mapped_column(ForeignKey("addresses.id"))
 
     address: Mapped["Address"] = relationship (
-        back_populates="Address",
+        back_populates="addresses",
+        lazy="joined"
+    )
+
+    products: Mapped[List["Product"]] = relationship(
+        secondary="orderitems",
+        back_populates="products",
         lazy="joined"
     )
 

@@ -4,10 +4,11 @@ from typing import (
 )
 from sqlalchemy.orm import (
     Mapped,
+    noload,
     relationship,
 )
 
-from shoersshopapi.core.database.models import favorite
+from shoersshopapi.core.database.models import cart, favorite
 
 from .base import Base
 
@@ -16,6 +17,8 @@ from shoersshopapi.core.utils.enum import Color
 if TYPE_CHECKING:
     from .size import Size
     from .brand import Brand
+    from .order import Order
+    from .cart import Cart
 
 
 class Product(Base):
@@ -33,4 +36,16 @@ class Product(Base):
     brand: Mapped["Brand"] = relationship(
         back_populates="Brand",
         lazy="joined"
+    )
+
+    orders: Mapped[List["Order"]] = relationship(
+        secondary="orderitems",
+        back_populates="orders",
+        lazy="noload"
+    )
+
+    carts: Mapped[List["Cart"]] = relationship(
+        secondary="cartitems",
+        back_populates="carts",
+        lazy="noload"
     )

@@ -28,8 +28,8 @@ class Address(Base):
     apartment: Mapped[str]
     postcode: Mapped[int]
 
-    order_id: Mapped[str] = mapped_column(
-        ForeignKey("orders.id"),
-        nullable=False
+    order: Mapped["Order"] = relationship(
+        back_populates="orders",
+        lazy="noload"
     )
     

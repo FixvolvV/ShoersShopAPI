@@ -1,6 +1,7 @@
 from typing import (
     List,
-    TYPE_CHECKING
+    TYPE_CHECKING,
+    Optional
 )
 from sqlalchemy import (
     JSON,
@@ -51,7 +52,7 @@ class User(Base):
         lazy="joined"
     )
 
-    cart: Mapped["Cart"] = relationship(
+    cart: Mapped[Optional["Cart"]] = relationship(
         back_populates="Cart",
         lazy="joined"
     )
