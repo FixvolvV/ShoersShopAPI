@@ -4,15 +4,12 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from shoersshopapi.core.database.models import Review, Order, Cart, Favorite
 from shoersshopapi.core.settings import settings
-from shoersshopapi.core.database.models.order import Order
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-
-    print(Order._user_back_populates)
-
     # startup
     yield
     # shutdown

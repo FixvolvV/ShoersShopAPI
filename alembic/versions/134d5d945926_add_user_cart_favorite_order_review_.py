@@ -1,8 +1,8 @@
 """Add user, cart, favorite, order, review tables
 
-Revision ID: ddfd1be9fe48
+Revision ID: 134d5d945926
 Revises: 4c3b0ace63da
-Create Date: 2026-03-02 23:56:56.564152
+Create Date: 2026-03-03 15:28:43.433244
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'ddfd1be9fe48'
+revision: str = '134d5d945926'
 down_revision: Union[str, Sequence[str], None] = '4c3b0ace63da'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -77,3 +77,6 @@ def downgrade() -> None:
     op.drop_table('carts')
     op.drop_table('users')
     # ### end Alembic commands ###
+    op.execute('DROP TYPE IF EXISTS rating')
+    op.execute('DROP TYPE IF EXISTS role')
+    op.execute('DROP TYPE IF EXISTS status')

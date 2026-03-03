@@ -15,7 +15,7 @@ from shoersshopapi.core.utils.enum import Status
 
 
 class Order(UserRelationMixin, Base):
-    _user_back_populates = Base.__tablename__
+    _user_back_populates = "orders"
 
     order_date: Mapped[datetime]
     total_amount: Mapped[int]

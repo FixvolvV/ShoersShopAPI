@@ -13,7 +13,7 @@ from shoersshopapi.core.utils.enum import Rating
 
 
 class Review(UserRelationMixin, Base):
-    _user_back_populates = Base.__tablename__
+    _user_back_populates = "reviews"
 
     comment_text: Mapped[str]
     rating: Mapped[Rating] = mapped_column(default=Rating.very_good,  server_default=text("'very_good'"))
