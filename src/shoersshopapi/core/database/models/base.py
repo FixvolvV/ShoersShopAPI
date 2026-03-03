@@ -13,5 +13,8 @@ class Base(AsyncAttrs, DeclarativeBase):
 
     @declared_attr.directive
     def __tablename__(cls) -> str:
+        if cls.__name__.endswith("s"):
+            return cls.__name__.lower() + "es"
+            
         return cls.__name__.lower() + "s"
 

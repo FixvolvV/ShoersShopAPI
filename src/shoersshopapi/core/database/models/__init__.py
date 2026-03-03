@@ -7,7 +7,8 @@ __all__ = (
     "Review",
     "Product",
     "Size",
-    "Brand"
+    "Brand",
+    "Address"
 )
 
 from .base import Base
@@ -19,3 +20,4 @@ from .review import Review
 from .product import Product
 from .size import Size
 from .brand import Brand
+from .address import Address
