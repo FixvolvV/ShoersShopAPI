@@ -1,9 +1,12 @@
 from typing import (
     List,
-    TYPE_CHECKING
+    TYPE_CHECKING,
+    Optional
 )
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import (
     Mapped,
+    mapped_column,
     noload,
     relationship,
 )
@@ -27,25 +30,29 @@ class Product(Base):
     price: Mapped[float]
     color: Mapped[Color]
     avg_grade: Mapped[str]
+    brand_id: Mapped[str | None] = mapped_column(ForeignKey("brands.id"))
 
     sizes: Mapped[List["Size"]] = relationship(
-        back_populates="Size",
-        lazy="joined"
+        back_populates="product",
+        lazy="selectin",
+        cascade="all, delete-orphan"
     )
 
-    brand: Mapped["Brand"] = relationship(
-        back_populates="Brand",
+    brand: Mapped[Optional["Brand"]] = relationship(
+        back_populates="products",
         lazy="joined"
     )
 
     orders: Mapped[List["Order"]] = relationship(
         secondary="orderitems",
-        back_populates="orders",
-        lazy="noload"
+        back_populates="products",
+        lazy="noload",
+        cascade="all, delete-orphan"
     )
 
     carts: Mapped[List["Cart"]] = relationship(
         secondary="cartitems",
-        back_populates="carts",
-        lazy="noload"
+        back_populates="products",
+        lazy="noload",
+        cascade="all, delete-orphan"
     )

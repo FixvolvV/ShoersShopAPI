@@ -33,13 +33,13 @@ class Order(UserRelationMixin, Base):
     address_id: Mapped[str] = mapped_column(ForeignKey("addresses.id"))
 
     address: Mapped["Address"] = relationship (
-        back_populates="addresses",
+        back_populates="orders",
         lazy="joined"
     )
 
     products: Mapped[List["Product"]] = relationship(
         secondary="orderitems",
-        back_populates="products",
-        lazy="joined"
+        back_populates="orders",
+        lazy="selectin"
     )
 

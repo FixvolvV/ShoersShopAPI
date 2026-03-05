@@ -5,6 +5,7 @@ from typing import (
 )
 from sqlalchemy import (
     JSON,
+    delete,
     text
 )
 from sqlalchemy.orm import (
@@ -38,23 +39,26 @@ class User(Base):
     role: Mapped[Role] = mapped_column(default=Role.user,  server_default=text("'user'"))
 
     reviews: Mapped[List["Review"] | None] = relationship(
-        back_populates="Review",
-        lazy="joined"
+        back_populates="user",
+        lazy="selectin",
+        cascade="all, delete-orphan"
     )
 
     orders: Mapped[List["Order"] | None] = relationship(
-        back_populates="Order",
-        lazy="joined"
+        back_populates="user",
+        lazy="selectin"
     )
 
     favorites: Mapped[List["Favorite"] | None] = relationship(
-        back_populates="Favorite",
-        lazy="joined"
+        back_populates="user",
+        lazy="selectin",
+        cascade="all, delete-orphan"
     )
 
     cart: Mapped[Optional["Cart"]] = relationship(
-        back_populates="Cart",
-        lazy="joined"
+        back_populates="user",
+        lazy="joined",
+        cascade="all, delete-orphan"
     )
 
     @hybrid_property

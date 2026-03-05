@@ -8,6 +8,8 @@ from sqlalchemy.orm import (
 )
 from sqlalchemy import ForeignKey
 
+from sqlalchemy.orm.relationships import _LazyLoadArgumentType
+
 if TYPE_CHECKING:
     from .user import User
     from .product import Product
@@ -16,6 +18,7 @@ class UserRelationMixin:
     _user_id_nullable: bool = False
     _user_id_unique: bool = False
     _user_back_populates: str | None = None
+    _user_load_strategy: _LazyLoadArgumentType = "noload"
 
     @declared_attr
     def user_id(cls) -> Mapped[str]:
@@ -30,13 +33,14 @@ class UserRelationMixin:
         return relationship (
             "User",
             back_populates=cls._user_back_populates,
-            lazy="noload"
+            lazy=cls._user_load_strategy
         )
 
 class ProductRelationMixin:
     _product_id_nullable: bool = False
     _product_id_unique: bool = False
     _product_back_populates: str | None = None
+    _product_load_strategy: _LazyLoadArgumentType = "noload"
 
     @declared_attr
     def product_id(cls) -> Mapped[str]:
@@ -51,5 +55,5 @@ class ProductRelationMixin:
         return relationship (
             "Product",
             back_populates=cls._product_back_populates,
-            lazy="noload"
+            lazy=cls._product_load_strategy
         )
