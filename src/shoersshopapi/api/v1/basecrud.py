@@ -30,10 +30,10 @@ class BaseCrud(Generic[T]):
         instanse = cls.model(**values_dict)
 
         try:
-            responce = session.add(instanse)
+            session.add(instanse)
             await session.flush()
 
-            return responce
+            return instanse
 
         except SQLAlchemyError as e:
             await session.rollback()
@@ -43,7 +43,7 @@ class BaseCrud(Generic[T]):
     async def find_all(cls, session: AsyncSession, filters: BaseModel) -> Union[Sequence, None]:
         
         filters_dict = filters.model_dump(exclude_unset=True, exclude_defaults=True)
-        stmt = select(cls.model).where(**filters_dict)
+        stmt = select(cls.model).filter_by(**filters_dict)
         
         try:
             result = await session.execute(stmt)
@@ -54,10 +54,10 @@ class BaseCrud(Generic[T]):
             raise e
 
     @classmethod
-    async def find_one_or_none(cls, session: AsyncSession, filters: BaseModel) -> Union[Result, None]:
+    async def find_one_or_none(cls, session: AsyncSession, filters: BaseModel) -> Union[T, None]:
 
         filters_dict = filters.model_dump(exclude_unset=True, exclude_defaults=True)
-        stmt = select(cls.model).where(**filters_dict)
+        stmt = select(cls.model).filter_by(**filters_dict)
 
         try:
             result: Result = await session.execute(stmt)
@@ -93,6 +93,8 @@ class BaseCrud(Generic[T]):
                 setattr(target, key, value)
 
             await session.flush()
+
+            return target
 
         except SQLAlchemyError as e:
             await session.rollback()
