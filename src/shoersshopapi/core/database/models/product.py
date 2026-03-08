@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from .brand import Brand
     from .order import Order
     from .cart import Cart
+    from .favorite import Favorite
 
 
 class Product(Base):
@@ -38,6 +39,12 @@ class Product(Base):
         cascade="all, delete-orphan"
     )
 
+    favorites: Mapped[List["Favorite"]] = relationship(
+        back_populates="product",
+        lazy="noload",
+        cascade="all, delete-orphan"
+    )
+
     brand: Mapped[Optional["Brand"]] = relationship(
         back_populates="products",
         lazy="joined"
@@ -47,12 +54,10 @@ class Product(Base):
         secondary="orderitems",
         back_populates="products",
         lazy="noload",
-        cascade="all, delete-orphan"
     )
 
     carts: Mapped[List["Cart"]] = relationship(
         secondary="cartitems",
         back_populates="products",
         lazy="noload",
-        cascade="all, delete-orphan"
     )

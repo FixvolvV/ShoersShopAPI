@@ -11,6 +11,9 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
 )
+from typing import (
+    List
+)
 
 from sqlalchemy.orm import Mapped
 from .base import Base
@@ -28,7 +31,7 @@ class Address(Base):
     apartment: Mapped[str]
     postcode: Mapped[int]
 
-    order: Mapped["Order"] = relationship(
+    orders: Mapped[List["Order"]] = relationship(   # ← orders (множественное)
         back_populates="address",
         lazy="noload"
     )
