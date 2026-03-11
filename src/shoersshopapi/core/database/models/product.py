@@ -35,7 +35,7 @@ class Product(Base):
 
     sizes: Mapped[List["Size"]] = relationship(
         back_populates="product",
-        lazy="selectin",
+        lazy="noload",
         cascade="all, delete-orphan"
     )
 
@@ -47,7 +47,7 @@ class Product(Base):
 
     brand: Mapped[Optional["Brand"]] = relationship(
         back_populates="products",
-        lazy="joined"
+        lazy="noload"
     )
 
     orders: Mapped[List["Order"]] = relationship(

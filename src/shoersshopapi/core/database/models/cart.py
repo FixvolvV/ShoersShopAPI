@@ -24,5 +24,5 @@ class Cart(UserRelationMixin, Base):
     products: Mapped[List["Product"]] = relationship (
         secondary="cartitems",
         back_populates="carts",
-        lazy="selectin"
+        lazy="noload"
     )

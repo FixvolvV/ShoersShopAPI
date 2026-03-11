@@ -34,12 +34,12 @@ class Order(UserRelationMixin, Base):
 
     address: Mapped["Address"] = relationship (
         back_populates="orders",
-        lazy="joined"
+        lazy="noload"
     )
 
     products: Mapped[List["Product"]] = relationship(
         secondary="orderitems",
         back_populates="orders",
-        lazy="selectin"
+        lazy="noload"
     )
 

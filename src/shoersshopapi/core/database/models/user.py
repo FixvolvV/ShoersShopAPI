@@ -40,24 +40,24 @@ class User(Base):
 
     reviews: Mapped[List["Review"] | None] = relationship(
         back_populates="user",
-        lazy="selectin",
+        lazy="noload",
         cascade="all, delete-orphan"
     )
 
     orders: Mapped[List["Order"] | None] = relationship(
         back_populates="user",
-        lazy="selectin"
+        lazy="noload"
     )
 
     favorites: Mapped[List["Favorite"] | None] = relationship(
         back_populates="user",
-        lazy="selectin",
+        lazy="noload",
         cascade="all, delete-orphan"
     )
 
     cart: Mapped[Optional["Cart"]] = relationship(
         back_populates="user",
-        lazy="joined",
+        lazy="noload",
         cascade="all, delete-orphan"
     )
 
