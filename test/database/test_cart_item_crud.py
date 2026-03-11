@@ -3,7 +3,7 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
 from .helpers import gen_id, CartItemCrud, CartItemCreate, CartItemUpdate, Color
-from src.shoersshopapi.core.database.models.product import Product
+from shoersshopapi.core.database.models.product import Product
 
 
 class TestCartItemAdd:

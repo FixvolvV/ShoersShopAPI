@@ -2,16 +2,16 @@
 Тесты корректности __tablename__.
 """
 
-from src.shoersshopapi.core.database.models.user import User
-from src.shoersshopapi.core.database.models.product import Product
-from src.shoersshopapi.core.database.models.brand import Brand
-from src.shoersshopapi.core.database.models.order import Order
-from src.shoersshopapi.core.database.models.address import Address
-from src.shoersshopapi.core.database.models.review import Review
-from src.shoersshopapi.core.database.models.favorite import Favorite
-from src.shoersshopapi.core.database.models.size import Size
-from src.shoersshopapi.core.database.models.cart import Cart
-from src.shoersshopapi.core.database.models.association import CartItem, OrderItem
+from shoersshopapi.core.database.models.user import User
+from shoersshopapi.core.database.models.product import Product
+from shoersshopapi.core.database.models.brand import Brand
+from shoersshopapi.core.database.models.order import Order
+from shoersshopapi.core.database.models.address import Address
+from shoersshopapi.core.database.models.review import Review
+from shoersshopapi.core.database.models.size import Size
+from shoersshopapi.core.database.models.favorite import Favorite
+from shoersshopapi.core.database.models.cart import Cart
+from shoersshopapi.core.database.models.association import CartItem, OrderItem
 
 
 class TestTableNames:

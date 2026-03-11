@@ -4,7 +4,7 @@
 
 import pytest
 from .helpers import gen_id
-from src.shoersshopapi.core.database.models.favorite import Favorite
+from shoersshopapi.core.database.models.favorite import Favorite
 
 
 class TestFavoriteMixinBug:
