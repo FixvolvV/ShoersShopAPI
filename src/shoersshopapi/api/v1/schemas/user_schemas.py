@@ -1,18 +1,25 @@
 from pydantic import BaseModel
 from typing import (
-    List
+    List,
+    Sequence
 )
 
-class User(BaseModel):
+from shoersshopapi.core.utils.enum import Role
+
+
+class UserUnique(BaseModel):
+
+    phone: str
+    email: str
+
+class User(UserUnique):
 
     surname: str
     name: str
     patronymic: str
-    password: bytes
-    phone: str
-    email: str
-    role: str
-    social_link: str | None
+    password: bytes | str
+    role: Role = Role.user
+    social_link: str | None = None
 
 class UserWithId(User):
 
@@ -20,7 +27,7 @@ class UserWithId(User):
 
 class Users(BaseModel):
 
-    users: List[UserWithId] | None
+    users: Sequence[UserWithId | None] | None
 
 class RegistrationForm(BaseModel):
 
