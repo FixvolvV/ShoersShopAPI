@@ -4,6 +4,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
+TOKEN_TYPE_FIELD = "type"
+ACCESS_TOKEN_TYPE = "access"
+REFRESH_TOKEN_TYPE = "refresh"
+
 class RunConfig(BaseModel):
     mode: str = "development"
 
@@ -17,10 +21,18 @@ class DatabaseConfig(BaseModel):
 class Httpcors(BaseModel):
     urls: list = []
 
+class JWTConfig(BaseModel):
+    public: Path
+    private: Path
+    algorithm: str = "RS256"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 5
+
 class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     db: DatabaseConfig
     httpcors: Httpcors = Httpcors()
+    jwt: JWTConfig
 
     model_config = SettingsConfigDict (
         env_file=(BASE_DIR / ".env", BASE_DIR / ".env.template"),
