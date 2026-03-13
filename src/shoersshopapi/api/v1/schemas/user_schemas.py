@@ -1,18 +1,18 @@
 from pydantic import BaseModel
 from typing import (
-    List,
     Sequence
 )
 
 from shoersshopapi.core.utils.enum import Role
 
+#-------------- User Schemes -------------- 
 
 class UserUnique(BaseModel):
 
     phone: str
     email: str
 
-class User(UserUnique):
+class UserSchema(UserUnique):
 
     surname: str
     name: str
@@ -21,13 +21,33 @@ class User(UserUnique):
     role: Role = Role.user
     social_link: str | None = None
 
-class UserWithId(User):
+class UserWithId(UserSchema):
 
     id: str
 
-class Users(BaseModel):
+class UsersSchema(BaseModel):
 
     users: Sequence[UserWithId | None] | None
+
+class UserUpdate(BaseModel):
+    surname: str | None = None
+    name: str | None = None
+    patronymic: str | None = None
+    password: bytes | None = None
+    social_link: str | None = None
+    phone: str | None = None
+    email: str | None = None
+    role: Role | None = None
+
+#-------------- User Filters -------------- 
+
+class UserFilter(BaseModel):
+    id: int | None = None
+    phone: str | None = None
+    email: str | None = None
+    role: Role | None = None
+
+#-------------- User Forms -------------- 
 
 class RegistrationForm(BaseModel):
 

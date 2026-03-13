@@ -1,21 +1,25 @@
 __all__ = (
     "UserUnique",
-    "User",
+    "UserSchema",
     "UserWithId",
-    "Users",
+    "UsersSchema",
     "RegistrationForm",
     "LoginFormByPhone",
     "LoginFormByEmail",
     "JWTCreateSchema",
-    "TokenInfo"
+    "TokenInfo",
+    "OrderSchema",
+    "OrderWithId",
+    "OrderUpdate",
+    "OrderFilter"
 )
 
 
 from .user_schemas import (
     UserUnique,
-    User,
+    UserSchema,
     UserWithId,
-    Users,
+    UsersSchema,
     RegistrationForm,
     LoginFormByPhone,
     LoginFormByEmail
@@ -23,4 +27,11 @@ from .user_schemas import (
 from .jwt_schemas import (
     JWTCreateSchema,
     TokenInfo
+)
+
+from .order_schemas import (
+    OrderSchema,
+    OrderWithId,
+    OrderUpdate,
+    OrderFilter
 )
