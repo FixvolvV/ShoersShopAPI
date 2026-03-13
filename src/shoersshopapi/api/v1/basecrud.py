@@ -8,8 +8,12 @@ from typing import (
 
 from sqlalchemy import (
     Result,
-    select
+    select,
+    inspect
 )
+
+
+from sqlalchemy.orm import selectinload
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,10 +22,76 @@ from pydantic import BaseModel
 
 from shoersshopapi.core.database import Base
 
+
+class StatementBuilder:
+
+    def __init__(self, model):
+        self.model = model
+        self._stmt = select(model)
+        self._joined = set()
+
+    def _ensure_join(self, relation):
+        key = str(relation)
+        if key not in self._joined:
+            self._stmt = self._stmt.join(relation)
+            self._joined.add(key)
+
+    def filters(self, filters, model=None):
+
+        if filters is None:
+            return self
+
+        target_model = model or self.model
+
+        if target_model != self.model:
+
+            for rel in inspect(self.model).relationships:
+                if rel.mapper.class_ == target_model:
+                    self._ensure_join(getattr(self.model, rel.key))
+                    break
+
+        for field_name, value in filters.model_dump(exclude_none=True).items():
+            if field_name.endswith("_min"):
+                column = getattr(target_model, field_name.removesuffix("_min"))
+                self._stmt = self._stmt.where(column >= value)
+            elif field_name.endswith("_max"):
+                column = getattr(target_model, field_name.removesuffix("_max"))
+                self._stmt = self._stmt.where(column <= value)
+            else:
+                column = getattr(target_model, field_name)
+                self._stmt = self._stmt.where(column == value)
+
+        return self
+
+    def load(self, *relations):
+        for relation in relations:
+            self._stmt = self._stmt.options(selectinload(relation))
+        return self
+
+    def order_by(self, field, desc: bool = False):
+        self._stmt = self._stmt.order_by(field.desc() if desc else field)
+        return self
+
+    def limit(self, value: int):
+        self._stmt = self._stmt.limit(value)
+        return self
+
+    def offset(self, value: int):
+        self._stmt = self._stmt.offset(value)
+        return self
+
+    def build(self):
+        return self._stmt
+
+
 T = TypeVar("T", bound=Base)
 
 class BaseCrud(Generic[T]):
     model: type[T]
+
+    @classmethod
+    def stmt(cls) -> StatementBuilder:
+        return StatementBuilder(cls.model)
 
     @classmethod
     async def add(cls, session: AsyncSession, values: BaseModel) -> Union[T, None]:
@@ -40,10 +110,7 @@ class BaseCrud(Generic[T]):
             raise e
     
     @classmethod
-    async def find_all(cls, session: AsyncSession, filters: BaseModel) -> Union[Sequence, None]:
-        
-        filters_dict = filters.model_dump(exclude_unset=True, exclude_defaults=True)
-        stmt = select(cls.model).filter_by(**filters_dict)
+    async def find_all(cls, session: AsyncSession, stmt) -> Union[Sequence, None]:
         
         try:
             result = await session.execute(stmt)
@@ -54,10 +121,7 @@ class BaseCrud(Generic[T]):
             raise e
 
     @classmethod
-    async def find_one_or_none(cls, session: AsyncSession, filters: BaseModel) -> Union[T, None]:
-
-        filters_dict = filters.model_dump(exclude_unset=True, exclude_defaults=True)
-        stmt = select(cls.model).filter_by(**filters_dict)
+    async def find_one_or_none(cls, session: AsyncSession, stmt) -> Union[T, None]:
 
         try:
             result: Result = await session.execute(stmt)

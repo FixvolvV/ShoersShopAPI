@@ -3,20 +3,17 @@ from fastapi import (
     Depends,
     HTTPException
 )
-from pydantic import BaseModel
+
 from starlette import status
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.api.v1.schemas import (
     UserUnique,
-    User,
-    Users
+    User
 )
 
-from shoersshopapi.api.v1.schemas.user_schemas import UserWithId
 from shoersshopapi.api.v1.users.crud import UserCrud
-from shoersshopapi.api.v1.utils import gen_uuid, hash_password
 from shoersshopapi.core.database import database
 
 
@@ -42,20 +39,3 @@ async def check_user_data(
         raise exception
 
     return data
-
-# Функция добавляющая пользователя в DB. 
-async def create_user(
-    data: User,
-    session: AsyncSession
-) -> UserWithId:
-
-    user: UserWithId = UserWithId(**data.model_dump(), id=gen_uuid())
-
-    user.password = hash_password(
-        password=str(user.password)
-    )
-
-    await UserCrud.add(session=session, values=user)
-    await session.commit()
-
-    return user
