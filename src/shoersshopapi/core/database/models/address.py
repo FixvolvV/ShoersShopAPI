@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from .order import Order
 
 class Address(UserRelationMixin, Base):
-    _user_back_populates="adresses"
+    _user_back_populates="addresses"
 
     region: Mapped[str]
     city: Mapped[str]

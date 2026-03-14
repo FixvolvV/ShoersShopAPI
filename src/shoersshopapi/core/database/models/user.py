@@ -50,7 +50,7 @@ class User(Base):
         lazy="noload"
     )
 
-    adresses: Mapped[List["Address"] | None] = relationship(
+    addresses: Mapped[List["Address"] | None] = relationship(
         back_populates="user",
         lazy="noload"
     )
