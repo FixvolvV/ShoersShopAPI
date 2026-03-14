@@ -12,11 +12,13 @@ from typing import (
 
 from sqlalchemy.orm import Mapped
 from .base import Base
+from .mixin import UserRelationMixin
 
 if TYPE_CHECKING:
     from .order import Order
 
-class Address(Base):
+class Address(UserRelationMixin, Base):
+    _user_back_populates="adresses"
 
     region: Mapped[str]
     city: Mapped[str]

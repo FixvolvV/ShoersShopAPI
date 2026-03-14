@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from .review import Review
     from .favorite import Favorite
     from .cart import Cart
+    from .address import Address
 
 class User(Base):
 
@@ -45,6 +46,11 @@ class User(Base):
     )
 
     orders: Mapped[List["Order"] | None] = relationship(
+        back_populates="user",
+        lazy="noload"
+    )
+
+    adresses: Mapped[List["Address"] | None] = relationship(
         back_populates="user",
         lazy="noload"
     )
