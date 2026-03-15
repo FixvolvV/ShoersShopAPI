@@ -1,5 +1,5 @@
 from typing import AsyncGenerator, AsyncIterator
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import (
@@ -124,9 +124,10 @@ async def sample_product(session: AsyncSession, sample_brand: Brand) -> Product:
 
 
 @pytest_asyncio.fixture
-async def sample_address(session: AsyncSession) -> Address:
+async def sample_address(session: AsyncSession, sample_user: User) -> Address:
     address = Address(
         id=gen_id(),
+        user_id=sample_user.id,
         region="Московская область",
         city="Москва",
         street="Тверская",
@@ -146,7 +147,7 @@ async def sample_order(session: AsyncSession, sample_user: User, sample_address:
         id=gen_id(),
         user_id=sample_user.id,
         address_id=sample_address.id,
-        order_date=datetime.utcnow(),
+        order_date=datetime.now(timezone.utc).replace(tzinfo=None),
         total_amount=25980,
     )
     session.add(order)
@@ -205,3 +206,107 @@ async def sample_order_item(session: AsyncSession, sample_order: Order, sample_p
     session.add(oi)
     await session.flush()
     return oi
+
+
+# ═══════════════════════════════════════
+#  Множественные фабрики (для тестов списков)
+# ═══════════════════════════════════════
+
+@pytest_asyncio.fixture
+async def sample_users(session: AsyncSession) -> list[User]:
+    """Создаёт 5 пользователей"""
+    users = []
+    for i in range(5):
+        user = User(
+            id=gen_id(),
+            surname=f"Фамилия_{i}",
+            name=f"Имя_{i}",
+            patronymic=f"Отчество_{i}",
+            password=b"hashed_password_bytes",
+            phone=unique_phone(),
+            email=unique_email(),
+        )
+        session.add(user)
+        users.append(user)
+    await session.flush()
+    return users
+
+
+@pytest_asyncio.fixture
+async def user_with_addresses(
+    session: AsyncSession,
+    sample_user: User
+) -> tuple[User, list[Address]]:
+    """Пользователь + 3 адреса"""
+    addresses = []
+    for i in range(3):
+        addr = Address(
+            id=gen_id(),
+            user_id=sample_user.id,
+            region=f"Регион_{i}",
+            city=f"Город_{i}",
+            street=f"Улица_{i}",
+            house=str(i + 1),
+            entrance=str(i + 1),
+            apartment=str(i + 10),
+            postcode=100000 + i,
+        )
+        session.add(addr)
+        addresses.append(addr)
+
+    await session.flush()
+    return sample_user, addresses
+
+@pytest_asyncio.fixture
+async def user_with_reviews(
+    session: AsyncSession,
+    sample_user: User
+) -> tuple[User, list[Review]]:
+    """Пользователь + 3 отзыва"""
+    reviews = []
+    for i in range(3):
+        review = Review(
+            id=gen_id(),
+            user_id=sample_user.id,
+            comment_text=f"Отзыв_{i}",
+            rating=Rating.very_good,
+        )
+        session.add(review)
+        reviews.append(review)
+    await session.flush()
+    return sample_user, reviews
+
+@pytest_asyncio.fixture
+async def user_with_orders(
+    session: AsyncSession,
+    sample_user: User,
+) -> tuple[User, list[Order]]:
+    """Пользователь + 3 заказа"""
+    # Сначала создаём адрес
+    address = Address(
+        id=gen_id(),
+        user_id=sample_user.id,
+        region="Регион",
+        city="Город",
+        street="Улица",
+        house="1",
+        entrance="1",
+        apartment="1",
+        postcode=100000,
+    )
+    session.add(address)
+    await session.flush()
+
+    orders = []
+    for i in range(3):
+        order = Order(
+            id=gen_id(),
+            user_id=sample_user.id,
+            address_id=address.id,
+            order_date=datetime.now(timezone.utc).replace(tzinfo=None),
+            total_amount=10000 * (i + 1),
+        )
+        session.add(order)
+        orders.append(order)
+    await session.flush()
+    return sample_user, orders

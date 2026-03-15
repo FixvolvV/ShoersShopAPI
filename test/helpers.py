@@ -96,6 +96,7 @@ class ProductUpdate(BaseModel):
 
 class AddressCreate(BaseModel):
     id: str
+    user_id: str
     region: str
     city: str
     street: str

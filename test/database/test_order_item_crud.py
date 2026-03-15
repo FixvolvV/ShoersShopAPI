@@ -2,7 +2,7 @@
 
 import pytest
 from sqlalchemy.exc import IntegrityError
-from .helpers import gen_id, OrderItemCrud, OrderItemCreate, OrderItemUpdate, Color
+from test.helpers import gen_id, OrderItemCrud, OrderItemCreate, OrderItemUpdate, Color
 from shoersshopapi.core.database.models.product import Product
 
 

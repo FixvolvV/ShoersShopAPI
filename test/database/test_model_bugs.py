@@ -3,7 +3,7 @@
 """
 
 import pytest
-from .helpers import gen_id
+from test.helpers import gen_id
 from shoersshopapi.core.database.models.favorite import Favorite
 
 

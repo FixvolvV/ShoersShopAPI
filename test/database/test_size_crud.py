@@ -2,7 +2,7 @@
 
 import pytest
 from sqlalchemy.exc import IntegrityError
-from .helpers import gen_id, SizeCrud, SizeCreate, SizeUpdate
+from test.helpers import gen_id, SizeCrud, SizeCreate, SizeUpdate
 
 
 class TestSizeAdd:

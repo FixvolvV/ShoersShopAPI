@@ -2,7 +2,7 @@
 
 import pytest
 from sqlalchemy.exc import IntegrityError
-from .helpers import gen_id, CartCrud, CartCreate
+from test.helpers import gen_id, CartCrud, CartCreate
 from shoersshopapi.core.database.models.cart import Cart
 
 

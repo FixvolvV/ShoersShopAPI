@@ -2,7 +2,7 @@
 
 import pytest
 from sqlalchemy.exc import IntegrityError
-from .helpers import gen_id, ReviewCrud, ReviewCreate, ReviewUpdate, Rating
+from test.helpers import gen_id, ReviewCrud, ReviewCreate, ReviewUpdate, Rating
 
 
 class TestReviewAdd:

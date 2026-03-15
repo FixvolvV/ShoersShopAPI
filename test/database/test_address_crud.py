@@ -1,16 +1,15 @@
-"""Тесты CRUD для Address."""
-
 import pytest
-from .helpers import gen_id, AddressCrud, AddressCreate, AddressUpdate
+from test.helpers import gen_id, AddressCrud, AddressCreate, AddressUpdate
 
 
 class TestAddressAdd:
 
     @pytest.mark.asyncio
-    async def test_add(self, session):
+    async def test_add(self, session, sample_user):  # добавлено sample_user
         aid = gen_id()
         data = AddressCreate(
             id=aid,
+            user_id=sample_user.id,  # добавлено
             region="Ленинградская область",
             city="Санкт-Петербург",
             street="Невский проспект",
@@ -28,10 +27,11 @@ class TestAddressAdd:
         assert found.postcode == 190000
 
     @pytest.mark.asyncio
-    async def test_postcode_is_int(self, session):
+    async def test_postcode_is_int(self, session, sample_user):  # добавлено sample_user
         aid = gen_id()
         data = AddressCreate(
             id=aid,
+            user_id=sample_user.id,  # добавлено
             region="МО", city="Город", street="Ул",
             house="1", entrance="1", apartment="1",
             postcode=999999,

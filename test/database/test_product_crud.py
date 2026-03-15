@@ -2,7 +2,7 @@
 
 import pytest
 from sqlalchemy.exc import IntegrityError
-from .helpers import gen_id, ProductCrud, ProductCreate, ProductUpdate, Color
+from test.helpers import gen_id, ProductCrud, ProductCreate, ProductUpdate, Color
 
 
 class TestProductAdd:

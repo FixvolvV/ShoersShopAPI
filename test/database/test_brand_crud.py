@@ -1,7 +1,7 @@
 """Тесты CRUD для Brand."""
 
 import pytest
-from .helpers import gen_id, BrandCrud, BrandCreate, BrandUpdate
+from test.helpers import gen_id, BrandCrud, BrandCreate, BrandUpdate
 
 
 class TestBrandAdd:
