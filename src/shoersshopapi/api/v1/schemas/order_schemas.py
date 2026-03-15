@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import (
+    Optional,
     Sequence
 )
 
@@ -22,13 +23,13 @@ class OrderWithId(OrderSchema):
 
 class OrdersSchema(BaseModel):
 
-    orders: Sequence[OrderWithId | None] | None
+    orders: Optional[Optional[OrderWithId]] = None
 
 class OrderUpdate(BaseModel):
 
     order_date: str | None = None
     total_amount: float | None = None
-    status: Status | None = None
+    status: Status | str | None = None
 
 #-------------- Order Filters -------------- 
 
@@ -39,4 +40,4 @@ class OrderFilter(BaseModel):
     user_id: str | None = None
     order_date: str | None = None
     total_amount: float | None = None
-    status: Status | None = None
+    status: Status | str | None = None

@@ -1,24 +1,24 @@
-from enum import Enum
+from enum import StrEnum
 
-class Role(Enum):
-    user = 1
-    admin = 2
+class Role(StrEnum):
+    user = "user"
+    admin = "admin"
 
-class Status(Enum):
-    confirmation = 1
-    transit = 2
-    delivered = 3
+class Status(StrEnum):
+    confirmation = "confirmation"
+    transit = "transit"
+    delivered = "delivered"
 
-class Rating(Enum):
-    very_bad = 1
-    bad = 2
-    normal = 3
-    good = 4
-    very_good = 5
+class Rating(StrEnum):
+    very_bad = "very_bad"
+    bad = "bad"
+    normal = "normal"
+    good = "good"
+    very_good = "very_good"
 
-class Color(Enum):
-    black = 1
-    white = 2
-    blue = 3
-    gray = 4
+class Color(StrEnum):
+    black = "black"
+    white = "white"
+    blue = "blue"
+    gray = "gray"
     

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import (
+    Optional,
     Sequence
 )
 
@@ -7,6 +8,7 @@ from typing import (
 
 class AddressSchema(BaseModel):
     
+    user_id: str
     region: str
     city: str
     street: str
@@ -21,7 +23,7 @@ class AddressWithId(AddressSchema):
 
 class AddressesSchema(BaseModel):
 
-    addresses: Sequence[AddressWithId | None] | None
+    addresses: Optional[Optional[AddressWithId]] = None
 
 class AddressUpdate(BaseModel):
     
@@ -38,6 +40,7 @@ class AddressUpdate(BaseModel):
 class AddressFilter(BaseModel):
     
     id: str | None = None
+    user_id: str | None = None
     region: str | None = None
     city: str | None = None
     street: str | None = None

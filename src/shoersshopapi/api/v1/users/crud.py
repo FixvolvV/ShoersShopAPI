@@ -1,44 +1,207 @@
+from typing import (
+    Union
+)
+
+from fastapi import HTTPException
+
+from pydantic import BaseModel
+from starlette import status
+
 from shoersshopapi.api.v1.basecrud import BaseCrud
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shoersshopapi.core.database.models import User as model_user
-
-from shoersshopapi.api.v1.schemas import UserSchema
+from shoersshopapi.core.database.models import User
 
 from shoersshopapi.api.v1.utils import gen_uuid, hash_password
-from shoersshopapi.api.v1.schemas.user_schemas import UserWithId
-
-class UserCrud(BaseCrud[model_user]):
-    model = model_user
-
+from shoersshopapi.api.v1.schemas.user_schemas import (
+    UserSchema,
+    UserUpdate,
+    UserFilter,
+    UserUnique,
+    UserWithId
+)
 
 # Функция добавляющая пользователя в DB. 
-async def add_user(
-    data: UserSchema,
-    session: AsyncSession
-) -> UserWithId:
+class UserCrud(BaseCrud[User]):
+    model = User
 
-    user: UserWithId = UserWithId(**data.model_dump(), id=gen_uuid())
+    # === CREATE ===
 
-    user.password = hash_password(
-        password=str(user.password)
-    )
+    @classmethod
+    async def check_user_unique(cls, session: AsyncSession, data: BaseModel) -> bool:
 
-    await UserCrud.add(session=session, values=user)
-    await session.commit()
+        exception = HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with this phone or mail already exists"
+        )
 
-    return user
+        # Берём только те поля, которые есть и не None
+        data_dict = data.model_dump(exclude_none=True, exclude_unset=True)
+        
+        phone = data_dict.get("phone")
+        email = data_dict.get("email")
+
+        # Если ни phone, ни email не переданы — проверять нечего
+        if not phone and not email:
+            return True
+
+        # Проверяем phone если передан
+        if phone:
+            existing = await cls.find_one_or_none(
+                session,
+                cls.stmt().filters(UserFilter(phone=phone)).build()
+            )
+            if existing:
+                raise exception
+
+        # Проверяем email если передан
+        if email:
+            existing = await cls.find_one_or_none(
+                session,
+                cls.stmt().filters(UserFilter(email=email)).build()
+            )
+            if existing:
+                raise exception
+
+        return True
 
 
-async def find_user_by_id(
-    id: str,
-    session: AsyncSession
-) -> UserWithId:
+    @classmethod
+    async def create_user(cls, session: AsyncSession, data: UserSchema) -> Union[User, None]:
 
-    user: UserWithId = UserWithId.model_validate(
-        await UserCrud.find_one_or_none_by_id(session=session, id=id)
-    )
+        # Проверяем что phone и email не заняты
+        if await cls.check_user_unique(session, data):
 
-    return user
+            data = UserWithId(**data.model_dump(), id=gen_uuid())
 
+            data.password = hash_password(
+                str(data.password)
+            )
+
+            user = await cls.add(session, data)
+            return user
+
+    # === READ: один пользователь ===
+
+    @classmethod
+    async def get_by_id(cls, session: AsyncSession, user_id: str):
+        """Получить пользователя по id"""
+        stmt = (
+            cls.stmt()
+            .filters(UserFilter(id=user_id))
+            .build()
+        )
+        return await cls.find_one_or_none(session, stmt)
+
+    @classmethod
+    async def get_by_email(cls, session: AsyncSession, email: str):
+        """Получить пользователя по email (для авторизации)"""
+        stmt = (
+            cls.stmt()
+            .filters(UserFilter(email=email))
+            .build()
+        )
+        return await cls.find_one_or_none(session, stmt)
+
+    @classmethod
+    async def get_by_phone(cls, session: AsyncSession, phone: str):
+        """Получить пользователя по телефону"""
+        stmt = (
+            cls.stmt()
+            .filters(UserFilter(phone=phone))
+            .build()
+        )
+        return await cls.find_one_or_none(session, stmt)
+
+    @classmethod
+    async def get_with_addresses(cls, session: AsyncSession, user_id: str):
+        """Пользователь + его адреса"""
+        stmt = (
+            cls.stmt()
+            .filters(UserFilter(id=user_id))
+            .load(User.addresses)
+            .build()
+        )
+        return await cls.find_one_or_none(session, stmt)
+
+    @classmethod
+    async def get_with_orders(cls, session: AsyncSession, user_id: str):
+        """Пользователь + его заказы"""
+        stmt = (
+            cls.stmt()
+            .filters(UserFilter(id=user_id))
+            .load(User.orders)
+            .build()
+        )
+        return await cls.find_one_or_none(session, stmt)
+
+    @classmethod
+    async def get_with_reviews(cls, session: AsyncSession, user_id: str):
+        """Пользователь + его отзывы"""
+        stmt = (
+            cls.stmt()
+            .filters(UserFilter(id=user_id))
+            .load(User.reviews)
+            .build()
+        )
+        return await cls.find_one_or_none(session, stmt)
+
+    @classmethod
+    async def get_full(cls, session: AsyncSession, user_id: str):
+        """Пользователь со всеми связями"""
+        stmt = (
+            cls.stmt()
+            .filters(UserFilter(id=user_id))
+            .load(User.addresses, User.orders, User.reviews)
+            .build()
+        )
+        return await cls.find_one_or_none(session, stmt)
+
+    # === READ: список пользователей ===
+
+    @classmethod
+    async def get_all(
+        cls,
+        session: AsyncSession,
+        filters: UserFilter | None = None,
+        limit: int = 20,
+        offset: int = 0
+    ):
+        """Получить список пользователей с фильтрами"""
+        stmt = (
+            cls.stmt()
+            .filters(filters)
+            .order_by(User.id)
+            .limit(limit)
+            .offset(offset)
+            .build()
+        )
+        return await cls.find_all(session, stmt)
+
+    # === UPDATE ===
+
+    @classmethod
+    async def update_user(
+        cls,
+        session: AsyncSession,
+        user_id: str,
+        data: UserUpdate
+    ):
+        """Обновить данные пользователя"""
+
+        # Проверка на уникальные значения
+        if await cls.check_user_unique(session, data):
+
+            if data.password is not None:
+                data.password = hash_password(str(data.password))
+
+            user = await cls.update_one_by_id(session, user_id, data)
+            return user, None
+
+    # === DELETE ===
+
+    @classmethod
+    async def delete_user(cls, session: AsyncSession, user_id: str):
+        """Удалить пользователя"""
+        return await cls.delete_one_by_id(session, user_id)

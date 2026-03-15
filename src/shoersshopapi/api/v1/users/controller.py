@@ -10,14 +10,8 @@ from shoersshopapi.api.v1.schemas import (
     UserWithId
 )
 
+from shoersshopapi.api.v1.users.crud import UserCrud
 from shoersshopapi.core.database import database
-
-from .utils import (
-    check_user_data
-)
-from .crud import (
-    add_user
-)
 
 router = APIRouter(
     tags=["User"]
@@ -29,10 +23,7 @@ router = APIRouter(
     response_class=JSONResponse
     )
 async def addUser(
-    user_data: Annotated[
-        UserSchema,
-        Depends(check_user_data)
-    ],
+    user_data: UserSchema,
     session: Annotated[
         AsyncSession,
         Depends(database.GetSession)
@@ -40,7 +31,7 @@ async def addUser(
     response: Response
 ):
 
-    user: UserWithId = await add_user(data=user_data, session=session)
+    user = await UserCrud.create_user(data=user_data, session=session)
 
     return {
         "status": "OK",

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import (
+    Optional,
     Sequence
 )
 
@@ -11,7 +12,7 @@ class ReviewSchema(BaseModel):
 
     user_id: str
     comment_text: str
-    rating: Rating
+    rating: Rating | str
 
 class ReviewWithId(BaseModel):
 
@@ -19,7 +20,7 @@ class ReviewWithId(BaseModel):
 
 class ReviewsSchema(BaseModel):
 
-    reviews: Sequence[ReviewWithId | None] | None
+    reviews: Optional[Optional[ReviewWithId]] = None
 
 #-------------- Review Filters --------------
 
@@ -28,4 +29,4 @@ class ReviewFilter(BaseModel):
     id: str | None = None
     user_id: str | None = None
     comment_text: str | None = None
-    rating: Rating | None = None
+    rating: Rating | str | None = None

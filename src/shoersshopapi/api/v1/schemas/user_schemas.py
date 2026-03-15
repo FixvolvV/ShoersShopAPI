@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import (
+    Optional,
     Sequence
 )
 
@@ -18,7 +19,7 @@ class UserSchema(UserUnique):
     name: str
     patronymic: str
     password: bytes | str
-    role: Role = Role.user
+    role: Role | str = Role.user
     social_link: str | None = None
 
 class UserWithId(UserSchema):
@@ -27,25 +28,25 @@ class UserWithId(UserSchema):
 
 class UsersSchema(BaseModel):
 
-    users: Sequence[UserWithId | None] | None
+    users: Optional[Optional[UserWithId]] = None
 
 class UserUpdate(BaseModel):
     surname: str | None = None
     name: str | None = None
     patronymic: str | None = None
-    password: bytes | None = None
+    password: bytes | str | None = None
     social_link: str | None = None
     phone: str | None = None
     email: str | None = None
-    role: Role | None = None
+    role: Role | str | None = None
 
 #-------------- User Filters -------------- 
 
 class UserFilter(BaseModel):
-    id: int | None = None
+    id: str | None = None
     phone: str | None = None
     email: str | None = None
-    role: Role | None = None
+    role: Role | str | None = None
 
 #-------------- User Forms -------------- 
 
