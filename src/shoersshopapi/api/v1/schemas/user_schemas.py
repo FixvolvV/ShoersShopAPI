@@ -6,6 +6,10 @@ from typing import (
 
 from shoersshopapi.core.utils.enum import Role
 
+from .address_schemas import AddressWithId
+from .order_schemas import OrderWithId
+from .review_schemas import ReviewWithId
+
 #-------------- User Schemes -------------- 
 
 class UserUnique(BaseModel):
@@ -26,10 +30,6 @@ class UserWithId(UserSchema):
 
     id: str
 
-class UsersSchema(BaseModel):
-
-    users: Optional[Optional[UserWithId]] = None
-
 class UserUpdate(BaseModel):
     surname: str | None = None
     name: str | None = None
@@ -39,6 +39,11 @@ class UserUpdate(BaseModel):
     phone: str | None = None
     email: str | None = None
     role: Role | str | None = None
+
+class UserFull(UserWithId):
+    addresses: list[AddressWithId] = []
+    orders: list[OrderWithId] = []
+    reviews: list[ReviewWithId] = []
 
 #-------------- User Filters -------------- 
 

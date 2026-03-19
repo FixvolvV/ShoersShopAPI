@@ -18,7 +18,6 @@ from shoersshopapi.api.v1.schemas.user_schemas import (
     UserSchema,
     UserUpdate,
     UserFilter,
-    UserUnique,
     UserWithId
 )
 
@@ -36,7 +35,7 @@ class UserCrud(BaseCrud[User]):
             detail="An account with this phone or mail already exists"
         )
 
-        # Берём только те поля, которые есть и не None
+        # Берём только те поля, которые были заданы.
         data_dict = data.model_dump(exclude_none=True, exclude_unset=True)
         
         phone = data_dict.get("phone")
@@ -80,6 +79,8 @@ class UserCrud(BaseCrud[User]):
             )
 
             user = await cls.add(session, data)
+            await session.commit()
+
             return user
 
     # === READ: один пользователь ===
@@ -188,7 +189,6 @@ class UserCrud(BaseCrud[User]):
         user_id: str,
         data: UserUpdate
     ):
-        """Обновить данные пользователя"""
 
         # Проверка на уникальные значения
         if await cls.check_user_unique(session, data):
@@ -197,11 +197,15 @@ class UserCrud(BaseCrud[User]):
                 data.password = hash_password(str(data.password))
 
             user = await cls.update_one_by_id(session, user_id, data)
-            return user, None
+            await session.commit()
+
+            return user
 
     # === DELETE ===
 
     @classmethod
     async def delete_user(cls, session: AsyncSession, user_id: str):
-        """Удалить пользователя"""
-        return await cls.delete_one_by_id(session, user_id)
+        deleted_id = await cls.delete_one_by_id(session, user_id)
+        await session.commit()
+
+        return deleted_id
