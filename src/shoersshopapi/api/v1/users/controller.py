@@ -16,7 +16,7 @@ from shoersshopapi.api.v1.schemas import (
 )
 
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(tags=["User"])
 
 
 USERNOTFOUND = HTTPException(
