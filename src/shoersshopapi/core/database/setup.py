@@ -36,14 +36,14 @@ class Database:
             expire_on_commit=False,
         )
     
-    async def GetSession(self) -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         async with self.session_factory() as session:
             try:
                 yield session
             finally:
                 await session.close()
     
-    async def Dispose(self) -> None:
+    async def dispose(self) -> None:
         await self.engine.dispose()
 
 
