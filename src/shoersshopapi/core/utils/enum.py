@@ -8,6 +8,7 @@ class Status(StrEnum):
     confirmation = "confirmation"
     transit = "transit"
     delivered = "delivered"
+    cancelled = "cancelled"
 
 class Rating(StrEnum):
     very_bad = "very_bad"
