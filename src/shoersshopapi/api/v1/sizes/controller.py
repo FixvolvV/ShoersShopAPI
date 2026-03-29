@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.core.database import database
@@ -8,10 +8,19 @@ from .crud import SizeCrud
 from shoersshopapi.api.v1.schemas import (
     SizeSchema,
     SizeUpdate,
-    SizeWithId
+    SizeWithId,
+    UserWithId
 )
 
-router = APIRouter(tags=["Sizes"])
+from shoersshopapi.api.v1.validators.http import (
+    oauth2_scheme,
+    get_current_auth_user,
+    RoleRequired,
+)
+
+router = APIRouter(
+    tags=["Sizes"]
+)
 
 SIZENOTFOUND = HTTPException(status_code=404, detail="Size not found")
 
@@ -21,6 +30,10 @@ SIZENOTFOUND = HTTPException(status_code=404, detail="Size not found")
     status_code=status.HTTP_201_CREATED,
 )
 async def create_size(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -88,6 +101,10 @@ async def get_size(
     response_model=SizeWithId
 )
 async def update_size(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -108,6 +125,10 @@ async def update_size(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_size(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
