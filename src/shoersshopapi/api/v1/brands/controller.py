@@ -54,10 +54,6 @@ async def create_brand(
     summary="Получить бренд по ID",
 )
 async def get_brand(
-    user: Annotated[
-        UserWithId,
-        Depends(get_current_auth_user)
-    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -78,10 +74,6 @@ async def get_brand(
     summary="Получить список брендов",
 )
 async def get_brands(
-    user: Annotated[
-        UserWithId,
-        Depends(get_current_auth_user)
-    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
