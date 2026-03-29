@@ -50,7 +50,12 @@ __all__ = (
     "SizeSchema",
     "SizeWithId",
     "SizeUpdate",
-    "SizeFilter"
+    "SizeFilter",
+
+    "ReviewSchema",
+    "ReviewWithId",
+    "ReviewUpdate",
+    "ReviewFilter"
 )
 
 
@@ -128,4 +133,11 @@ from .size_schemas import (
     SizeWithId,
     SizeUpdate,
     SizeFilter
+)
+
+from .review_schemas import (
+    ReviewSchema,
+    ReviewWithId,
+    ReviewUpdate,
+    ReviewFilter
 )

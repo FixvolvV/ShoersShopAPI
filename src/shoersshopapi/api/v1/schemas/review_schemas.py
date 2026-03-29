@@ -10,13 +10,17 @@ from shoersshopapi.core.utils.enum import Rating
 
 class ReviewSchema(BaseModel):
 
-    user_id: str
     comment_text: str
     rating: Rating | str
 
-class ReviewWithId(BaseModel):
+class ReviewWithId(ReviewSchema):
 
     id: str
+    user_id: str
+
+class ReviewUpdate(BaseModel):
+    comment_text: str | None = None
+    rating: Rating | None = None
 
 class ReviewsSchema(BaseModel):
 
