@@ -46,6 +46,11 @@ __all__ = (
     "CartItemWithProduct",
     "CartCreate",
     "CartItemCreate",
+
+    "SizeSchema",
+    "SizeWithId",
+    "SizeUpdate",
+    "SizeFilter"
 )
 
 
@@ -116,4 +121,11 @@ from .cart_schemas import (
     CartItemWithProduct,
     CartCreate,
     CartItemCreate
+)
+
+from .size_schemas import (
+    SizeSchema,
+    SizeWithId,
+    SizeUpdate,
+    SizeFilter
 )
