@@ -12,26 +12,39 @@ from shoersshopapi.api.v1.schemas import (
     CartItemAdd,
     CartItemUpdate,
     CartItemResponse,
+    UserWithId
 )
 
-router = APIRouter(tags=["Cart"])
+from shoersshopapi.api.v1.validators.http import (
+    oauth2_scheme,
+    get_current_auth_user,
+    RoleRequired,
+)
+
+router = APIRouter(
+    tags=["Cart"],
+    dependencies=[Depends(oauth2_scheme)]
+)
 
 ITEMNOTFOUND = HTTPException(status_code=404, detail="Item not found")
 
 @router.get(
-    "/{user_id}",
+    "/",
 )
 async def get_cart(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
-    user_id: str,  # потом из JWT
 ):
-    cart = await CartCrud.get_cart_with_items(session, user_id)
+    cart = await CartCrud.get_cart_with_items(session, user.id)
 
     if not cart:
-        return {"id": None, "user_id": user_id, "items": [], "total_amount": 0}
+        return {"id": None, "user_id": user.id, "items": [], "total_amount": 0}
 
     # Формируем ответ с информацией о товарах
     items = []
@@ -61,36 +74,42 @@ async def get_cart(
 
 
 @router.post(
-    "/{user_id}/items",
+    "/items",
     response_model=CartItemResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def add_to_cart(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
-    user_id: str,  # потом из JWT
     data: CartItemAdd,
 ):
-    item = await CartCrud.add_item(session, user_id, data)
+    item = await CartCrud.add_item(session, user.id, data)
     return item
 
 
 @router.patch(
-    "/{user_id}/items/{item_id}",
+    "/items/{item_id}",
     response_model=CartItemResponse | None,
 )
 async def update_cart_item(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
-    user_id: str,
     item_id: str,
     data: CartItemUpdate,
 ):
-    item = await CartCrud.update_item(session, user_id, item_id, data)
+    item = await CartCrud.update_item(session, user.id, item_id, data)
 
     if item is None and data.quantity > 0:
         raise ITEMNOTFOUND
@@ -99,32 +118,38 @@ async def update_cart_item(
 
 
 @router.delete(
-    "/{user_id}/items/{item_id}",
+    "/items/{item_id}",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def remove_from_cart(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
-    user_id: str,
     item_id: str,
 ):
-    removed = await CartCrud.remove_item(session, user_id, item_id)
+    removed = await CartCrud.remove_item(session, user.id, item_id)
 
     if not removed:
         raise ITEMNOTFOUND
 
 
 @router.delete(
-    "/{user_id}",
+    "/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def clear_cart(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
-    user_id: str,
 ):
-    await CartCrud.clear_cart(session, user_id)
+    await CartCrud.clear_cart(session, user.id)
