@@ -1,5 +1,3 @@
-# shoersshopapi/api/v1/user/controller.py
-
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
@@ -17,8 +15,16 @@ from shoersshopapi.api.v1.schemas import (
     UserFull,
 )
 
+from shoersshopapi.api.v1.validators.http import (
+    oauth2_scheme,
+    get_current_auth_user,
+    RoleRequired,
+)
 
-router = APIRouter(tags=["User"])
+router = APIRouter(
+    tags=["User"],
+    dependencies=[Depends(oauth2_scheme)]
+)
 
 
 USERNOTFOUND = HTTPException(
@@ -35,15 +41,19 @@ USERNOTFOUND = HTTPException(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_user(
-    data: UserSchema,
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
-    ]
+    ],
+    data: UserSchema,
 ):
 
-    user = await UserCrud.create_user(session, data)
-    return user
+    user_data = await UserCrud.create_user(session, data)
+    return user_data
 
 
 #  READ: один пользователь
@@ -54,18 +64,22 @@ async def create_user(
     summary="Получить пользователя по ID",
 )
 async def get_user(
-    user_id: str,
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
-    ]
+    ],
+    user_id: str,
 ):
-    user = await UserCrud.get_by_id(session, user_id)
+    user_data = await UserCrud.get_by_id(session, user_id)
     
-    if not user:
+    if not user_data:
         raise USERNOTFOUND
     
-    return user
+    return user_data
 
 
 @router.get(
@@ -74,19 +88,23 @@ async def get_user(
     summary="Получить пользователя со всеми связями",
 )
 async def get_user_full(
-    user_id: str,
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
-    ]
+    ],
+    user_id: str,
 ):
     """Пользователь с адресами, заказами и отзывами"""
-    user = await UserCrud.get_full(session, user_id)
+    user_data = await UserCrud.get_full(session, user_id)
     
-    if not user:
+    if not user_data:
         raise USERNOTFOUND
     
-    return user
+    return user_data
 
 
 @router.get(
@@ -95,18 +113,22 @@ async def get_user_full(
     summary="Получить пользователя с заказами",
 )
 async def get_user_orders(
-    user_id: str,
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
-    ]
+    ],
+    user_id: str,
 ):
-    user = await UserCrud.get_with_orders(session, user_id)
+    user_data = await UserCrud.get_with_orders(session, user_id)
     
-    if not user:
+    if not user_data:
         raise USERNOTFOUND
     
-    return user
+    return user_data
 
 
 @router.get(
@@ -115,18 +137,22 @@ async def get_user_orders(
     summary="Получить пользователя с отзывами",
 )
 async def get_user_reviews(
-    user_id: str,
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
-    ]
+    ],
+    user_id: str,
 ):
-    user = await UserCrud.get_with_reviews(session, user_id)
+    user_data = await UserCrud.get_with_reviews(session, user_id)
     
-    if not user:
+    if not user_data:
         raise USERNOTFOUND
     
-    return user
+    return user_data
 
 
 @router.get(
@@ -135,18 +161,22 @@ async def get_user_reviews(
     summary="Получить пользователя с адресами",
 )
 async def get_user_addresses(
-    user_id: str,
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
-    ]
+    ],
+    user_id: str,
 ):
-    user = await UserCrud.get_with_addresses(session, user_id)
+    user_data = await UserCrud.get_with_addresses(session, user_id)
     
-    if not user:
+    if not user_data:
         raise USERNOTFOUND
     
-    return user
+    return user_data
 
 
 #  READ: список пользователей
@@ -157,6 +187,10 @@ async def get_user_addresses(
     summary="Получить список пользователей",
 )
 async def get_users(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -169,9 +203,7 @@ async def get_users(
     page: Annotated[int, Query(ge=1, description="Номер страницы")] = 1,
     limit: Annotated[int, Query(ge=1, le=100, description="Количество на странице")] = 20,
 ):
-    """
-    Получить список пользователей с фильтрами и пагинацией.
-    """
+
     filters = UserFilter(
         phone=phone,
         email=email,
@@ -193,24 +225,52 @@ async def get_users(
 #  UPDATE
 
 @router.patch(
+    "/",
+    response_model=UserWithId,
+)
+async def update_self(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
+    session: Annotated[
+        AsyncSession,
+        Depends(database.get_session)
+    ],
+    data: UserUpdate,
+):
+
+    user_data = await UserCrud.update_user(session, user.id, data)
+    
+    if not user_data:
+        raise USERNOTFOUND
+    
+    return user_data
+
+
+@router.patch(
     "/{user_id}",
     response_model=UserWithId,
 )
 async def update_user(
-    user_id: str,
-    data: UserUpdate,
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
-    ]
+    ],
+    user_id: str,
+    data: UserUpdate,
 ):
 
-    user = await UserCrud.update_user(session, user_id, data)
+    user_data = await UserCrud.update_user(session, user_id, data)
     
-    if not user:
+    if not user_data:
         raise USERNOTFOUND
     
-    return user
+    return user_data
 
 
 #  DELETE
@@ -220,11 +280,15 @@ async def update_user(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_user(
-    user_id: str,
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
-    ]
+    ],
+    user_id: str,
 ):
     """Удалить пользователя по ID"""
     deleted = await UserCrud.delete_user(session, user_id)
