@@ -5,10 +5,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.core.database import database
 from .crud import BrandCrud
-from shoersshopapi.api.v1.schemas import BrandWithId, BrandFilter
 
+from shoersshopapi.api.v1.schemas import BrandWithId, BrandFilter, UserWithId
 
-router = APIRouter(tags=["Brands"])
+from shoersshopapi.api.v1.validators.http import (
+    oauth2_scheme,
+    get_current_auth_user,
+    RoleRequired,
+)
+
+router = APIRouter(
+        tags=["Brands"],
+        dependencies=[Depends(oauth2_scheme)]
+)
 
 BRANDNOTFOUND = HTTPException(
     status_code=404,
@@ -21,6 +30,10 @@ BRANDNOTFOUND = HTTPException(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_brand(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -41,6 +54,10 @@ async def create_brand(
     summary="Получить бренд по ID",
 )
 async def get_brand(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -61,6 +78,10 @@ async def get_brand(
     summary="Получить список брендов",
 )
 async def get_brands(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -81,6 +102,10 @@ async def get_brands(
     response_model=BrandWithId,
 )
 async def update_brand_logo(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -112,6 +137,10 @@ async def update_brand_logo(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_brand(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
