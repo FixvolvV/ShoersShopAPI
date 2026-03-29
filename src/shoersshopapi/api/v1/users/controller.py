@@ -5,8 +5,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shoersshopapi.api.v1.schemas.user_schemas import UserWithId
 from shoersshopapi.core.database import database
+from shoersshopapi.core.utils.enum import Role
+
+from shoersshopapi.api.v1.schemas.user_schemas import UserWithId
 from shoersshopapi.api.v1.users.crud import UserCrud
 from shoersshopapi.api.v1.schemas import (
     UserSchema,
@@ -36,7 +38,7 @@ async def create_user(
     data: UserSchema,
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ]
 ):
 
@@ -55,7 +57,7 @@ async def get_user(
     user_id: str,
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ]
 ):
     user = await UserCrud.get_by_id(session, user_id)
@@ -75,7 +77,7 @@ async def get_user_full(
     user_id: str,
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ]
 ):
     """Пользователь с адресами, заказами и отзывами"""
@@ -96,7 +98,7 @@ async def get_user_orders(
     user_id: str,
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ]
 ):
     user = await UserCrud.get_with_orders(session, user_id)
@@ -116,7 +118,7 @@ async def get_user_reviews(
     user_id: str,
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ]
 ):
     user = await UserCrud.get_with_reviews(session, user_id)
@@ -136,7 +138,7 @@ async def get_user_addresses(
     user_id: str,
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ]
 ):
     user = await UserCrud.get_with_addresses(session, user_id)
@@ -157,12 +159,12 @@ async def get_user_addresses(
 async def get_users(
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ],
     # Фильтры
     phone: Annotated[str | None, Query(description="Фильтр по телефону")] = None,
     email: Annotated[str | None, Query(description="Фильтр по email")] = None,
-    role: Annotated[str | None, Query(description="Фильтр по роли")] = None,
+    role: Annotated[Role | None, Query(description="Фильтр по роли")] = None,
     # Пагинация
     page: Annotated[int, Query(ge=1, description="Номер страницы")] = 1,
     limit: Annotated[int, Query(ge=1, le=100, description="Количество на странице")] = 20,
@@ -199,7 +201,7 @@ async def update_user(
     data: UserUpdate,
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ]
 ):
 
@@ -221,7 +223,7 @@ async def delete_user(
     user_id: str,
     session: Annotated[
         AsyncSession,
-        Depends(database.GetSession)
+        Depends(database.get_session)
     ]
 ):
     """Удалить пользователя по ID"""
