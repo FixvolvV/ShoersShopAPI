@@ -7,6 +7,7 @@ from shoersshopapi.api.v1.sizes.controller import router as sizes_router
 from shoersshopapi.api.v1.orders.controller import router as orders_router
 from shoersshopapi.api.v1.carts.controller import router as carts_router
 from shoersshopapi.api.v1.addresses.controller import router as addresses_router
+from shoersshopapi.api.v1.reviews.controller import router as reviews_router
 
 from shoersshopapi.api.v1.streams.controller import router as streams_router
 
@@ -19,5 +20,6 @@ router.include_router(sizes_router, prefix="/sizes")
 router.include_router(orders_router, prefix="/orders")
 router.include_router(carts_router, prefix="/carts")
 router.include_router(addresses_router, prefix="/addresses")
+router.include_router(reviews_router, prefix="/reviews")
 
 router.include_router(streams_router, prefix="/streams")
