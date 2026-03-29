@@ -19,11 +19,6 @@ from shoersshopapi.api.v1.schemas import (
     ReviewFilter
 )
 
-NOTYOURREVIEW = HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not your review",
-            )
-
 class ReviewCrud(BaseCrud[Review]):
     model = Review
 
@@ -69,6 +64,11 @@ class ReviewCrud(BaseCrud[Review]):
         return await cls.find_one_or_none(session, stmt)
 
     @classmethod
+    async def get_by_user_id(cls, session: AsyncSession, user_id: str):
+        stmt = cls.stmt().filters(ReviewFilter(user_id=user_id)).build()
+        return await cls.find_one_or_none(session, stmt)
+
+    @classmethod
     async def get_all(
         cls,
         session: AsyncSession,
@@ -104,11 +104,10 @@ class ReviewCrud(BaseCrud[Review]):
     # === UPDATE ===
 
     @classmethod
-    async def update_review(
+    async def update_review_by_id(
         cls,
         session: AsyncSession,
         review_id: str,
-        user_id: str,
         data: ReviewUpdate,
     ):
         review = await cls.find_one_or_none_by_id(session, review_id)
@@ -116,10 +115,26 @@ class ReviewCrud(BaseCrud[Review]):
         if not review:
             return None
 
-        if review.user_id != user_id:
-            raise NOTYOURREVIEW
-
         review = await cls.update_one_by_id(session, review_id, data)
+        await session.commit()
+        return review
+
+
+    @classmethod
+    async def update_review_by_user_id(
+        cls,
+        session: AsyncSession,
+        user_id: str,
+        data: ReviewUpdate,
+    ):
+
+        stmt = cls.stmt().filters(ReviewFilter(user_id=user_id)).build()
+        review = await cls.find_one_or_none(session, stmt)
+
+        if not review:
+            return None
+
+        review = await cls.update_one_by_id(session, review.id, data)
         await session.commit()
         return review
 
@@ -130,16 +145,29 @@ class ReviewCrud(BaseCrud[Review]):
         cls,
         session: AsyncSession,
         review_id: str,
-        user_id: str,
     ) -> bool:
         review = await cls.find_one_or_none_by_id(session, review_id)
 
         if not review:
             return False
 
-        if review.user_id != user_id:
-            raise NOTYOURREVIEW
-
         result = await cls.delete_one_by_id(session, review_id)
+        await session.commit()
+        return result
+
+    @classmethod
+    async def delete_self_review(
+        cls,
+        session: AsyncSession,
+        user_id: str,
+    ) -> bool:
+
+        stmt = cls.stmt().filters(ReviewFilter(user_id=user_id)).build()
+        review = await cls.find_one_or_none(session, stmt)
+
+        if not review:
+            return False
+
+        result = await cls.delete_one_by_id(session, review.id)
         await session.commit()
         return result

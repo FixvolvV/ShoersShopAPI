@@ -12,10 +12,20 @@ from shoersshopapi.api.v1.schemas import (
     ReviewSchema,
     ReviewWithId,
     ReviewUpdate,
-    ReviewFilter
+    ReviewFilter,
+    UserWithId
 )
 
-router = APIRouter(tags=["Reviews"])
+from shoersshopapi.api.v1.validators.http import (
+    oauth2_scheme,
+    get_current_auth_user,
+    RoleRequired,
+)
+
+
+router = APIRouter(
+    tags=["Reviews"]
+)
 
 REVIEWSNOTFOUND = HTTPException(status_code=404, detail="Review not found")
 
@@ -26,14 +36,17 @@ REVIEWSNOTFOUND = HTTPException(status_code=404, detail="Review not found")
     summary="Оставить отзыв о сайте",
 )
 async def create_review(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
-    user_id: str,
     data: ReviewSchema,
 ):
-    review = await ReviewCrud.create_review(session, user_id ,data)
+    review = await ReviewCrud.create_review(session, user.id, data)
     return review
 
 
@@ -92,21 +105,67 @@ async def get_review(
     return review
 
 
+@router.get(
+    "/user/{user_id}",
+    response_model=ReviewWithId,
+    summary="Получить отзыв по user id",
+)
+async def get_user_review(
+    user_id: str,
+    session: Annotated[
+        AsyncSession,
+        Depends(database.get_session)
+    ],
+):
+    review = await ReviewCrud.get_by_user_id(session, user_id)
+
+    if not review:
+        raise REVIEWSNOTFOUND
+
+    return review
+
+
 @router.patch(
-    "/{review_id}",
+    "/",
     response_model=ReviewWithId,
     summary="Обновить отзыв",
 )
+async def update_self_review(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
+    session: Annotated[
+        AsyncSession,
+        Depends(database.get_session)
+    ],
+    data: ReviewUpdate,
+):
+    review = await ReviewCrud.update_review_by_user_id(session, user.id, data)
+
+    if not review:
+        raise REVIEWSNOTFOUND
+
+    return review
+
+@router.patch(
+    "/{review_id}",
+    response_model=ReviewWithId,
+    summary="Обновить отзыв (admin)",
+)
 async def update_review(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
     review_id: str,
-    user_id: str,
     data: ReviewUpdate,
 ):
-    review = await ReviewCrud.update_review(session, review_id, user_id, data)
+    review = await ReviewCrud.update_review_by_id(session, review_id, data)
 
     if not review:
         raise REVIEWSNOTFOUND
@@ -115,19 +174,43 @@ async def update_review(
 
 
 @router.delete(
-    "/{review_id}",
+    "/",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Удалить отзыв",
 )
-async def delete_review(
+async def delete_self_review(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
-    review_id: str,
-    user_id: str,
 ):
-    deleted = await ReviewCrud.delete_review(session, review_id, user_id)
+    deleted = await ReviewCrud.delete_self_review(session, user.id)
+
+    if not deleted:
+        raise REVIEWSNOTFOUND
+
+
+@router.delete(
+    "/{review_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Удалить отзыв (admin)",
+)
+async def delete_review(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
+    session: Annotated[
+        AsyncSession,
+        Depends(database.get_session)
+    ],
+    review_id: str
+):
+    deleted = await ReviewCrud.delete_review(session, review_id)
 
     if not deleted:
         raise REVIEWSNOTFOUND
