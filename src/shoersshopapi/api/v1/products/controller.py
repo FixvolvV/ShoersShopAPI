@@ -3,7 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shoersshopapi.api.v1.schemas.brand_schemas import BrandFilter
 from shoersshopapi.core.database import database
 from shoersshopapi.core.utils.enum import Color
 
@@ -13,11 +12,23 @@ from shoersshopapi.api.v1.schemas import (
     ProductWithId,
     ProductUpdate,
     ProductFilter,
-    ProductWithBrand
+    ProductWithBrand,
+    BrandFilter,
+    UserWithId
+)
+
+from shoersshopapi.api.v1.validators.http import (
+    oauth2_scheme,
+    get_current_auth_user,
+    RoleRequired,
 )
 
 
-router = APIRouter(tags=["Products"])
+
+router = APIRouter(
+    tags=["Products"],
+    dependencies=[Depends(oauth2_scheme)]
+)
 
 PRODUCTNOTFOUND = HTTPException(
     status_code=404,
@@ -30,6 +41,10 @@ PRODUCTNOTFOUND = HTTPException(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_product(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -107,6 +122,10 @@ async def get_products(
     response_model=ProductUpdate,
 )
 async def update_product(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -127,6 +146,10 @@ async def update_product(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_product(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
