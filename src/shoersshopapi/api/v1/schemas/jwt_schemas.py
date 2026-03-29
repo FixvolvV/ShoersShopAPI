@@ -4,8 +4,6 @@ from shoersshopapi.core.utils.enum import Role
 class JWTCreateSchema(BaseModel):
 
     id: str
-    username: str
-    password: str
     role: Role
 
 class TokenInfo(BaseModel):

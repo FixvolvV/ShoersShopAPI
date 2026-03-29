@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from shoersshopapi.api.v1.auth.controller import router as auth_router
 from shoersshopapi.api.v1.users.controller import router as users_router
 from shoersshopapi.api.v1.brands.controller import router as brands_router
 from shoersshopapi.api.v1.products.controller import router as products_router
@@ -13,6 +14,7 @@ from shoersshopapi.api.v1.streams.controller import router as streams_router
 
 router = APIRouter(prefix="/v1")
 
+router.include_router(auth_router, prefix="/auth")
 router.include_router(users_router, prefix="/users")
 router.include_router(brands_router, prefix="/brands")
 router.include_router(products_router, prefix="/products")

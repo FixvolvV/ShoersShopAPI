@@ -67,7 +67,7 @@ class UserCrud(BaseCrud[User]):
 
 
     @classmethod
-    async def create_user(cls, session: AsyncSession, data: UserSchema) -> Union[User, None]:
+    async def create_user(cls, session: AsyncSession, data: BaseModel) -> Union[User, None]:
 
         # Проверяем что phone и email не заняты
         if await cls.check_user_unique(session, data):

@@ -32,7 +32,6 @@ def create_access_token(user: JWTCreateSchema) -> str:
     jwt_payload = {
         # subject
         "sub": user.id,
-        "username": user.username,
         "role": user.role
         # "logged_in_at"
     }

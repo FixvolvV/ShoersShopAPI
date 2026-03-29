@@ -55,7 +55,10 @@ __all__ = (
     "ReviewSchema",
     "ReviewWithId",
     "ReviewUpdate",
-    "ReviewFilter"
+    "ReviewFilter",
+
+    "LoginSchema",
+    "RegisterSchema",
 )
 
 
@@ -140,4 +143,9 @@ from .review_schemas import (
     ReviewWithId,
     ReviewUpdate,
     ReviewFilter
+)
+
+from .auth_schemas import (
+    LoginSchema,
+    RegisterSchema,
 )
