@@ -1,25 +1,26 @@
 from pydantic import BaseModel
 from typing import (
-    Optional,
-    Sequence
+    Optional
 )
+from datetime import datetime
 
 from shoersshopapi.core.utils.enum import Status
+from .address_schemas import AddressWithId
 
 
 #-------------- Order Schemes -------------- 
 
 class OrderSchema(BaseModel):
     
-    address_id: int
-    user_id: str
-    order_date: str
+    address_id: str
+    order_date: datetime
     total_amount: float
     status: Status
 
 class OrderWithId(OrderSchema):
 
     id: str
+    user_id: str
 
 class OrdersSchema(BaseModel):
 
@@ -29,15 +30,45 @@ class OrderUpdate(BaseModel):
 
     order_date: str | None = None
     total_amount: float | None = None
-    status: Status | str | None = None
+    status: Status | None = None
+
 
 #-------------- Order Filters -------------- 
 
 class OrderFilter(BaseModel):
 
     id: str | None = None
-    address_id: int | None = None
+    address_id: str | None = None
     user_id: str | None = None
     order_date: str | None = None
     total_amount: float | None = None
     status: Status | str | None = None
+
+
+class OrderItemResponse(BaseModel):
+    id: str
+    product_id: str
+    quantity: int
+
+
+class OrderItemWithProduct(BaseModel):
+    id: str
+    product_id: str
+    quantity: int
+    title: str
+    price: float
+
+class OrderItemData(BaseModel):
+    id: str
+    order_id: str
+    product_id: str
+    quantity: int
+
+class OrderWithItems(OrderWithId):
+    items: list[OrderItemResponse] = []
+    address: AddressWithId | None = None
+
+
+class OrderFull(OrderWithId):
+    items: list[OrderItemWithProduct] = []
+    address: AddressWithId | None = None

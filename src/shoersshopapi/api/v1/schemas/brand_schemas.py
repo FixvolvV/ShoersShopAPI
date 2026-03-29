@@ -1,0 +1,21 @@
+from pydantic import BaseModel
+
+#-------------- Brand Schemes -------------- 
+
+class BrandSchema(BaseModel):
+    brand_name: str
+    brand_logo: str
+
+class BrandWithId(BrandSchema):
+    id: str
+
+class BrandUpdate(BaseModel):
+    brand_name: str | None = None
+    brand_logo: str | None = None
+
+
+#-------------- Brand Filters -------------- 
+
+class BrandFilter(BaseModel):
+    id: str | None = None
+    brand_name: str | None = None

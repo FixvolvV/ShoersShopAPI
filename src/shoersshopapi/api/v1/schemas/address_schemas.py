@@ -8,7 +8,6 @@ from typing import (
 
 class AddressSchema(BaseModel):
     
-    user_id: str
     region: str
     city: str
     street: str
@@ -20,6 +19,7 @@ class AddressSchema(BaseModel):
 class AddressWithId(AddressSchema):
 
     id: str
+    user_id: str
 
 class AddressesSchema(BaseModel):
 
