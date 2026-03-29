@@ -51,7 +51,7 @@ def upgrade() -> None:
     op.create_table('orders',
     sa.Column('order_date', sa.DateTime(), nullable=False),
     sa.Column('total_amount', sa.Integer(), nullable=False),
-    sa.Column('status', sa.Enum('confirmation', 'transit', 'delivered', name='status'), server_default=sa.text("'confirmation'"), nullable=False),
+    sa.Column('status', sa.Enum('confirmation', 'transit', 'delivered', 'cancelled', name='status'), server_default=sa.text("'confirmation'"), nullable=False),
     sa.Column('user_id', sa.String(), nullable=False),
     sa.Column('id', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),

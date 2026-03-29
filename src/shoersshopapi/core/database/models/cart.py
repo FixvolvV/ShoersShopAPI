@@ -14,6 +14,7 @@ from .mixin import UserRelationMixin
 
 if TYPE_CHECKING:
     from .product import Product
+    from .association import CartItem
     
 
 
@@ -25,4 +26,8 @@ class Cart(UserRelationMixin, Base):
         secondary="cartitems",
         back_populates="carts",
         lazy="noload"
+    )
+
+    cart_items: Mapped[List["CartItem"]] = relationship (
+        back_populates="cart"
     )

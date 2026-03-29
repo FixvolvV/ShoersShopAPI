@@ -23,6 +23,7 @@ from shoersshopapi.core.utils.enum import Status
 if TYPE_CHECKING:
     from .address import Address
     from .product import Product
+    from .association import OrderItem
 
 class Order(UserRelationMixin, Base):
     _user_back_populates = "orders"
@@ -41,5 +42,9 @@ class Order(UserRelationMixin, Base):
         secondary="orderitems",
         back_populates="orders",
         lazy="noload"
+    )
+
+    order_items: Mapped[list["OrderItem"]] = relationship(
+        back_populates="order",
     )
 

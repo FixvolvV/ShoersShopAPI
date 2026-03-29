@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from .order import Order
     from .cart import Cart
     from .favorite import Favorite
+    from .association import CartItem, OrderItem
 
 
 class Product(Base):
@@ -30,7 +31,7 @@ class Product(Base):
     title: Mapped[str]
     price: Mapped[float]
     color: Mapped[Color]
-    avg_grade: Mapped[str]
+    avg_grade: Mapped[str | None]
     brand_id: Mapped[str | None] = mapped_column(ForeignKey("brands.id"))
 
     sizes: Mapped[List["Size"]] = relationship(
@@ -61,3 +62,12 @@ class Product(Base):
         back_populates="products",
         lazy="noload",
     )
+
+    product_cart_items: Mapped[List["CartItem"]] = relationship(
+        back_populates="product"
+    )
+
+    product_order_items: Mapped[List["OrderItem"]] = relationship(
+        back_populates="product"
+    )
+
