@@ -18,6 +18,15 @@ class DatabaseConfig(BaseModel):
     pool_size: int = 50
     max_overflow: int = 10
 
+class MinioConfig(BaseModel):
+    endpoint_url: str
+    access_key: str
+    secret_key: str
+    bucket_name: str
+    region_name: str = "us-east-1"
+    file_size: int = 5 # MB
+    allowed_type: list = ["image/png", "image/jpeg", "image/webp"]
+
 class Httpcors(BaseModel):
     urls: list = []
 
@@ -31,6 +40,7 @@ class JWTConfig(BaseModel):
 class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     db: DatabaseConfig
+    minio: MinioConfig
     httpcors: Httpcors = Httpcors()
     jwt: JWTConfig
 
