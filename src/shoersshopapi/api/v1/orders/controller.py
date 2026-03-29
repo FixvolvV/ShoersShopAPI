@@ -15,9 +15,19 @@ from shoersshopapi.api.v1.schemas import (
     OrderFilter,
     OrderWithId,
     OrderFull,
+    UserWithId
 )
 
-router = APIRouter(tags=["Orders"])
+from shoersshopapi.api.v1.validators.http import (
+    oauth2_scheme,
+    get_current_auth_user,
+    RoleRequired,
+)
+
+router = APIRouter(
+    tags=["Orders"],
+    dependencies=[Depends(oauth2_scheme)]
+)
 
 ORDERNOTFOUND = HTTPException(status_code=404, detail="Order not found")
 
@@ -30,15 +40,18 @@ ORDERNOTFOUND = HTTPException(status_code=404, detail="Order not found")
     summary="Создать заказ из корзины",
 )
 async def create_order(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
-    user_id: str,  # потом из JWT
     data: OrderSchema,
 ):
 
-    order = await OrderCrud.create_order(session, user_id, data)
+    order = await OrderCrud.create_order(session, user.id, data)
     return order
 
 
@@ -50,6 +63,10 @@ async def create_order(
     summary="Получить заказ по ID",
 )
 async def get_order(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -90,6 +107,10 @@ async def get_order(
     summary="Получить заказы пользователя",
 )
 async def get_user_orders(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -117,9 +138,13 @@ async def get_user_orders(
 @router.patch(
     "/{order_id}/status",
     response_model=OrderWithId,
-    summary="Обновить статус заказа (admin)",
+    summary="Обновить статус заказа",
 )
 async def update_order_status(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
@@ -143,14 +168,17 @@ async def update_order_status(
     summary="Отменить заказ",
 )
 async def cancel_order(
+    user: Annotated[
+        UserWithId,
+        Depends(get_current_auth_user)
+    ],
     session: Annotated[
         AsyncSession,
         Depends(database.get_session)
     ],
     order_id: str,
-    user_id: str,  # потом из JWT
 ):
-    order = await OrderCrud.cancel_order(session, order_id, user_id)
+    order = await OrderCrud.cancel_order(session, order_id, user.id)
 
     if not order:
         raise ORDERNOTFOUND
