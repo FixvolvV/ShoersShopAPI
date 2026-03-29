@@ -1,13 +1,14 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from shoersshopapi.api.v1.schemas.user_schemas import UserFull
 from shoersshopapi.core.database import database
 from shoersshopapi.core.database.models import User
 
 from shoersshopapi.api.v1.users.crud import UserCrud
-from shoersshopapi.api.v1.schemas import UserSchema, UserWithId
+from shoersshopapi.api.v1.schemas import UserWithId
 
 from shoersshopapi.api.v1.schemas.jwt_schemas import JWTCreateSchema, TokenInfo
 from shoersshopapi.api.v1.schemas.auth_schemas import RegisterSchema
@@ -23,6 +24,10 @@ from shoersshopapi.api.v1.validators.http import (
 
 router = APIRouter(tags=["Auth"])
 
+USERNOTFOUND = HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
 
 #  REGISTER
 
@@ -96,11 +101,23 @@ async def refresh_token(
 
 @router.get(
     "/me/",
-    response_model=UserWithId,
+    response_model=UserFull,
     summary="Текущий пользователь",
 )
 async def get_me(
-    user: Annotated[User, Depends(get_current_auth_user)],
+    user: Annotated[
+        User,
+        Depends(get_current_auth_user)
+    ],
+    session: Annotated[
+        AsyncSession,
+        Depends(database.get_session)
+    ],
 ):
 
-    return user
+    user_data = await UserCrud.get_full(session, user.id)
+    
+    if not user_data:
+        raise USERNOTFOUND
+    
+    return user_data
