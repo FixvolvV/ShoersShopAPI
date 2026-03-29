@@ -15,8 +15,7 @@ from shoersshopapi.api.v1.validators.http import (
 )
 
 router = APIRouter(
-        tags=["Brands"],
-        dependencies=[Depends(oauth2_scheme)]
+        tags=["Brands"]
 )
 
 BRANDNOTFOUND = HTTPException(

@@ -26,8 +26,7 @@ from shoersshopapi.api.v1.validators.http import (
 
 
 router = APIRouter(
-    tags=["Products"],
-    dependencies=[Depends(oauth2_scheme)]
+    tags=["Products"]
 )
 
 PRODUCTNOTFOUND = HTTPException(
