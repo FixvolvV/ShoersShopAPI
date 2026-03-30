@@ -4,14 +4,50 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from shoersshopapi.core.database.models import Review, Order, Cart, Favorite
 from shoersshopapi.core.settings import settings
+from shoersshopapi.core.database import database
+from shoersshopapi.core.minio.setup import s3_client
+
+from shoersshopapi.api.v1.users.crud import UserCrud
+from shoersshopapi.api.v1.schemas import UserSchema
 
 from shoersshopapi.api import router
+
+async def create_default_admin():
+    async for session in database.get_session():
+        try:
+            existing = await UserCrud.get_by_email(session, "FixV@example.com")
+
+            if existing:
+                print(f"👤 Админ уже существует: {"FixV@example.com"}")
+                return
+
+            admin_data = UserSchema(
+                phone="+777",
+                email="FixV@example.com",
+                surname="FixV",
+                name="FixV",
+                patronymic="FixV",
+                password="FixvolvV1234",
+                role="admin",
+            )
+
+            admin = await UserCrud.create_user(session, admin_data)
+
+            if not admin:
+                raise
+
+            print(f"✅ Админ создан: {admin.email} → {admin.id}")
+
+        except Exception as e:
+            print(f"❌ Ошибка создания админа: {e}")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # startup
+    await s3_client.ensure_bucket()
+    await create_default_admin()
     yield
     # shutdown
 
