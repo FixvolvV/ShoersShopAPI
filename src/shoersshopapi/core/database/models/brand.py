@@ -17,5 +17,5 @@ class Brand(Base):
 
     products: Mapped[List["Product"] | None] = relationship(
         back_populates="brand",
-        lazy="noload"
+        lazy="noload",
     )

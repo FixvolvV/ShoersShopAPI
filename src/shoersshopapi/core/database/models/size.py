@@ -1,3 +1,4 @@
+from sqlalchemy import delete
 from sqlalchemy.orm import Mapped, relationship
 
 from typing import (
@@ -23,12 +24,14 @@ class Size(ProductRelationMixin, Base):
         secondary="orderitems",
         back_populates="sizes",
         lazy="noload",
+        cascade="all, delete"
     )
 
     carts: Mapped[List["Cart"]] = relationship(
         secondary="cartitems",
         back_populates="sizes",
         lazy="noload",
+        cascade="all, delete"
     )
 
     sizes_cart_items: Mapped[List["CartItem"]] = relationship(

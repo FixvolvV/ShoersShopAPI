@@ -7,11 +7,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
-    noload,
     relationship,
 )
-
-from shoersshopapi.core.database.models import cart, favorite
 
 from .base import Base
 
@@ -20,10 +17,7 @@ from shoersshopapi.core.utils.enum import Color
 if TYPE_CHECKING:
     from .size import Size
     from .brand import Brand
-    from .order import Order
-    from .cart import Cart
     from .favorite import Favorite
-    from .association import CartItem, OrderItem
 
 
 class Product(Base):
@@ -37,7 +31,7 @@ class Product(Base):
     sizes: Mapped[List["Size"]] = relationship(
         back_populates="product",
         lazy="noload",
-        cascade="all, delete-orphan"
+        cascade="all, delete"
     )
 
     favorites: Mapped[List["Favorite"]] = relationship(

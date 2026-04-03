@@ -19,11 +19,12 @@ class UserRelationMixin:
     _user_id_unique: bool = False
     _user_back_populates: str | None = None
     _user_load_strategy: _LazyLoadArgumentType = "noload"
+    _user_cascade_strategy: str = "all, delete-orphan"
 
     @declared_attr
     def user_id(cls) -> Mapped[str]:
         return mapped_column(
-            ForeignKey("users.id"),
+            ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
             unique=cls._user_id_unique,
             nullable=cls._user_id_nullable
         )
@@ -33,7 +34,9 @@ class UserRelationMixin:
         return relationship (
             "User",
             back_populates=cls._user_back_populates,
-            lazy=cls._user_load_strategy
+            lazy=cls._user_load_strategy,
+            cascade=cls._user_cascade_strategy,
+            single_parent=True
         )
 
 class ProductRelationMixin:
@@ -41,11 +44,12 @@ class ProductRelationMixin:
     _product_id_unique: bool = False
     _product_back_populates: str | None = None
     _product_load_strategy: _LazyLoadArgumentType = "noload"
+    _product_cascade_strategy: str = "all, delete-orphan"
 
     @declared_attr
     def product_id(cls) -> Mapped[str]:
         return mapped_column(
-            ForeignKey("products.id"),
+            ForeignKey("products.id", onupdate="CASCADE", ondelete="CASCADE"),
             unique=cls._product_id_unique,
             nullable=cls._product_id_nullable
         )
@@ -55,5 +59,7 @@ class ProductRelationMixin:
         return relationship (
             "Product",
             back_populates=cls._product_back_populates,
-            lazy=cls._product_load_strategy
+            lazy=cls._product_load_strategy,
+            cascade=cls._product_cascade_strategy,
+            single_parent=True
         )

@@ -18,12 +18,12 @@ class CartItem(Base):
         UniqueConstraint(
             "cart_id",
             "size_id",
-            name="idx_unique_cart_product"
+            name="idx_unique_cart_product",
         ),
     )
 
-    cart_id: Mapped[str] = mapped_column(ForeignKey("carts.id"))
-    size_id: Mapped[str] = mapped_column(ForeignKey("sizes.id"))
+    cart_id: Mapped[str] = mapped_column(ForeignKey("carts.id", onupdate="CASCADE", ondelete="SET NULL"))
+    size_id: Mapped[str] = mapped_column(ForeignKey("sizes.id", onupdate="CASCADE", ondelete="SET NULL"))
     quantity: Mapped[int] = mapped_column(default=1, server_default="1")
 
     cart: Mapped["Cart"] = relationship(back_populates="cart_items")
@@ -36,12 +36,12 @@ class OrderItem(Base):
         UniqueConstraint(
             "order_id",
             "size_id",
-            name="idx_unique_order_product"
+            name="idx_unique_order_product",
         ),
     )
 
-    order_id: Mapped[str] = mapped_column(ForeignKey("orders.id"))
-    size_id: Mapped[str] = mapped_column(ForeignKey("sizes.id"))
+    order_id: Mapped[str] = mapped_column(ForeignKey("orders.id", onupdate="CASCADE", ondelete="SET NULL"))
+    size_id: Mapped[str] = mapped_column(ForeignKey("sizes.id", onupdate="CASCADE", ondelete="SET NULL"))
     quantity: Mapped[int] = mapped_column(default=1, server_default="1")
 
     order: Mapped["Order"] = relationship(back_populates="order_items") 
