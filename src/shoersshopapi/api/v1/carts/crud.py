@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 
 from shoersshopapi.api.v1.basecrud import BaseCrud
 from shoersshopapi.api.v1.utils import gen_uuid
-from shoersshopapi.core.database.models import Cart, CartItem, Product
+from shoersshopapi.core.database.models import Cart, CartItem, Product, Size
 
 from  shoersshopapi.api.v1.schemas import (
     CartItemAdd,
@@ -51,7 +51,8 @@ class CartCrud(BaseCrud[Cart]):
             .where(Cart.user_id == user_id)
             .options(
                 selectinload(Cart.cart_items)
-                .selectinload(CartItem.product) 
+                .selectinload(CartItem.items)
+                .selectinload(Size.product) 
                 .selectinload(Product.brand)
             )
         )
@@ -79,7 +80,7 @@ class CartCrud(BaseCrud[Cart]):
             select(CartItem)
             .where(
                 CartItem.cart_id == cart.id,
-                CartItem.product_id == data.product_id,
+                CartItem.size_id == data.size_id,
             )
         )
         result = await session.execute(query)
@@ -96,7 +97,7 @@ class CartCrud(BaseCrud[Cart]):
         item_data = CartItemCreate(
             id=gen_uuid(),
             cart_id=cart.id,
-            product_id=data.product_id,
+            size_id=data.size_id,
             quantity=data.quantity,
         )
 
@@ -224,7 +225,7 @@ class CartCrud(BaseCrud[Cart]):
         query = (
             select(CartItem)
             .where(CartItem.cart_id == cart.id)
-            .options(selectinload(CartItem.product))
+            .options(selectinload(CartItem.size_id))
         )
         result = await session.execute(query)
         return list(result.scalars().all())

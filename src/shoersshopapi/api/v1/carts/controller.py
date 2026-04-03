@@ -17,8 +17,7 @@ from shoersshopapi.api.v1.schemas import (
 
 from shoersshopapi.api.v1.validators.http import (
     oauth2_scheme,
-    get_current_auth_user,
-    RoleRequired,
+    get_current_auth_user
 )
 
 router = APIRouter(
@@ -51,17 +50,20 @@ async def get_cart(
     total_amount = 0
 
     for cart_item in cart.cart_items:
-        product = cart_item.product
+        size = cart_item.items
+        product = size.product
         item_total = product.price * cart_item.quantity
         total_amount += item_total
 
         items.append({
             "id": cart_item.id,
+            "size_id": size.id,
             "product_id": product.id,
             "quantity": cart_item.quantity,
             "title": product.title,
             "price": product.price,
             "color": product.color,
+            "size": size.size,
             "brand_logo": product.brand.brand_logo if product.brand else None,
         })
 

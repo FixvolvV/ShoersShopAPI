@@ -24,11 +24,11 @@ class CartCreate(BaseModel):
 class CartItemCreate(BaseModel):
     id: str
     cart_id: str
-    product_id: str
+    size_id: str
     quantity: int
 
 class CartItemAdd(BaseModel):
-    product_id: str
+    size_id: str
     quantity: int = 1
 
 
@@ -39,13 +39,14 @@ class CartItemUpdate(BaseModel):
 class CartItemFilter(BaseModel):
     id: str | None = None
     cart_id: str | None = None
+    size_id: str | None = None
     product_id: str | None = None
 
 
 class CartItemResponse(BaseModel):
     id: str
     cart_id: str
-    product_id: str
+    size_id: str
     quantity: int
 
     model_config = ConfigDict(from_attributes=True)
@@ -53,11 +54,13 @@ class CartItemResponse(BaseModel):
 
 class CartItemWithProduct(BaseModel):
     id: str
+    size_id: str
     product_id: str
     quantity: int
     title: str
     price: float
     color: str
+    size: str
     brand_logo: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
