@@ -13,7 +13,7 @@ from .mixin import UserRelationMixin
 
 
 if TYPE_CHECKING:
-    from .product import Product
+    from .size import Size
     from .association import CartItem
     
 
@@ -22,7 +22,7 @@ class Cart(UserRelationMixin, Base):
     _user_back_populates = "cart"
     _user_id_unique = True
 
-    sizes: Mapped[List["Product"]] = relationship (
+    sizes: Mapped[List["Size"]] = relationship (
         secondary="cartitems",
         back_populates="carts",
         lazy="noload"

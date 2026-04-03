@@ -17,13 +17,13 @@ class CartItem(Base):
     __table_args__ = (
         UniqueConstraint(
             "cart_id",
-            "sizes_id",
+            "size_id",
             name="idx_unique_cart_product"
         ),
     )
 
     cart_id: Mapped[str] = mapped_column(ForeignKey("carts.id"))
-    sizes_id: Mapped[str] = mapped_column(ForeignKey("sizes.id"))
+    size_id: Mapped[str] = mapped_column(ForeignKey("sizes.id"))
     quantity: Mapped[int] = mapped_column(default=1, server_default="1")
 
     cart: Mapped["Cart"] = relationship(back_populates="cart_items")
@@ -35,13 +35,13 @@ class OrderItem(Base):
     __table_args__ = (
         UniqueConstraint(
             "order_id",
-            "sizes_id",
+            "size_id",
             name="idx_unique_order_product"
         ),
     )
 
     order_id: Mapped[str] = mapped_column(ForeignKey("orders.id"))
-    sizes_id: Mapped[str] = mapped_column(ForeignKey("sizes.id"))
+    size_id: Mapped[str] = mapped_column(ForeignKey("sizes.id"))
     quantity: Mapped[int] = mapped_column(default=1, server_default="1")
 
     order: Mapped["Order"] = relationship(back_populates="order_items") 
