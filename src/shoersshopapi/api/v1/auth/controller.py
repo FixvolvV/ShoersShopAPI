@@ -3,13 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shoersshopapi.api.v1.schemas.user_schemas import UserFull
 from shoersshopapi.core.database import database
 from shoersshopapi.core.database.models import User
 
 from shoersshopapi.api.v1.users.crud import UserCrud
-from shoersshopapi.api.v1.schemas import UserWithId
 
+from shoersshopapi.api.v1.schemas.user_schemas import UserFull
 from shoersshopapi.api.v1.schemas.jwt_schemas import JWTCreateSchema, TokenInfo
 from shoersshopapi.api.v1.schemas.auth_schemas import RegisterSchema
 
@@ -42,6 +41,11 @@ async def register(
 ):
 
     user = await UserCrud.create_user(session, data)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_418_IM_A_TEAPOT,
+            detail="User register failed")
 
     jwt_user = JWTCreateSchema(
             id=user.id, 
