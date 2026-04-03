@@ -27,10 +27,13 @@ class BrandCrud(BaseCrud[Brand]):
         brand_name: str,
         brand_logo: UploadFile,
     ) -> Union[Brand, None]:
-        logo_path = await image_service.upload_image(brand_logo, cls.FOLDER)
+
+        primary_id = gen_uuid()
+
+        logo_path = await image_service.upload_image(brand_logo, cls.FOLDER, primary_id)
 
         data = BrandWithId(
-            id=gen_uuid(),
+            id=primary_id,
             brand_name=brand_name,
             brand_logo=logo_path,
         )
@@ -86,6 +89,7 @@ class BrandCrud(BaseCrud[Brand]):
                 old_path=brand.brand_logo,
                 file=logo,
                 folder=cls.FOLDER,
+                id=brand.id,
             )
             update_data.brand_logo = new_logo_path
 

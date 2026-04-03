@@ -12,7 +12,7 @@ MAX_SIZE = settings.minio.file_size * 1024 * 1024  # 5 MB
 class ImageService:
 
     @staticmethod
-    async def upload_image(file: UploadFile, folder: str) -> str:
+    async def upload_image(file: UploadFile, folder: str, id: str) -> str:
         if file.content_type not in ALLOWED_TYPES:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -29,7 +29,7 @@ class ImageService:
             )
 
         ext = file.filename.split(".")[-1] if file.filename else "png"
-        file_name = f"{uuid.uuid4()}.{ext}"
+        file_name = f"{id}.{ext}"
         file_path = f"{folder}/{file_name}"
 
         await s3_client.upload_file(
@@ -50,10 +50,11 @@ class ImageService:
         old_path: str | None,
         file: UploadFile,
         folder: str,
+        id: str
     ) -> str:
         if old_path:
             await s3_client.delete_file(old_path)
-        return await ImageService.upload_image(file, folder)
+        return await ImageService.upload_image(file, folder, id)
 
     @staticmethod
     async def get_image_url(file_path: str) -> str:
