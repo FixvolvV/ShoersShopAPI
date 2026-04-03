@@ -17,7 +17,7 @@ class CartItem(Base):
     __table_args__ = (
         UniqueConstraint(
             "cart_id",
-            "product_id",
+            "sizes_id",
             name="idx_unique_cart_product"
         ),
     )
@@ -35,7 +35,7 @@ class OrderItem(Base):
     __table_args__ = (
         UniqueConstraint(
             "order_id",
-            "product_id",
+            "sizes_id",
             name="idx_unique_order_product"
         ),
     )
