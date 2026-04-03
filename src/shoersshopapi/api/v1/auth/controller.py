@@ -33,7 +33,7 @@ USERNOTFOUND = HTTPException(
 
 @router.post(
     "/register/",
-    response_model=UserWithId,
+    response_model=TokenInfo,
     status_code=status.HTTP_201_CREATED,
 )
 async def register(
@@ -42,7 +42,19 @@ async def register(
 ):
 
     user = await UserCrud.create_user(session, data)
-    return user
+
+    jwt_user = JWTCreateSchema(
+            id=user.id, 
+            role=user.role,
+        )
+
+    access_token = create_access_token(jwt_user)
+    refresh_token = create_refresh_token(jwt_user)
+
+    return TokenInfo(
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
 
 
 #  LOGIN

@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import (
-    Optional,
-    Sequence
+    List
 )
 
 from shoersshopapi.core.utils.enum import Role
@@ -24,7 +23,7 @@ class UserSchema(UserUnique):
     patronymic: str
     password: bytes | str
     role: Role | str = Role.user
-    social_link: str | None = None
+    social_link: List[str] | None = None
 
 class UserWithId(UserSchema):
 

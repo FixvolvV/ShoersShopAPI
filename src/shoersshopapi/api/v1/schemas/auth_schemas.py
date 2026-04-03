@@ -15,4 +15,4 @@ class RegisterSchema(BaseModel):
     surname: str
     name: str
     patronymic: str
-    password: bytes | str
+    password: str
