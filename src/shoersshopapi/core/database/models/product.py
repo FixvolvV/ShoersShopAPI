@@ -50,24 +50,3 @@ class Product(Base):
         back_populates="products",
         lazy="noload"
     )
-
-    orders: Mapped[List["Order"]] = relationship(
-        secondary="orderitems",
-        back_populates="products",
-        lazy="noload",
-    )
-
-    carts: Mapped[List["Cart"]] = relationship(
-        secondary="cartitems",
-        back_populates="products",
-        lazy="noload",
-    )
-
-    product_cart_items: Mapped[List["CartItem"]] = relationship(
-        back_populates="product"
-    )
-
-    product_order_items: Mapped[List["OrderItem"]] = relationship(
-        back_populates="product"
-    )
-

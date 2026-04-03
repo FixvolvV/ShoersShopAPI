@@ -38,7 +38,7 @@ class Order(UserRelationMixin, Base):
         lazy="noload"
     )
 
-    products: Mapped[List["Product"]] = relationship(
+    sizes: Mapped[List["Product"]] = relationship(
         secondary="orderitems",
         back_populates="orders",
         lazy="noload"

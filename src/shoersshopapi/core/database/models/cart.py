@@ -22,7 +22,7 @@ class Cart(UserRelationMixin, Base):
     _user_back_populates = "cart"
     _user_id_unique = True
 
-    products: Mapped[List["Product"]] = relationship (
+    sizes: Mapped[List["Product"]] = relationship (
         secondary="cartitems",
         back_populates="carts",
         lazy="noload"
