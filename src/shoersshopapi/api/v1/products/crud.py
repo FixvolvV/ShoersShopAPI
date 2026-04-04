@@ -1,10 +1,16 @@
 from typing import Union, Sequence
 
+from fastapi import UploadFile, HTTPException
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.api.v1.basecrud import BaseCrud
+from shoersshopapi.api.v1.schemas.product_schemas import ProductCreate
 from shoersshopapi.api.v1.utils import gen_uuid
 from shoersshopapi.core.database.models import Product, Brand
+from shoersshopapi.core.minio.image_service import image_service
+
+from shoersshopapi.core.settings import settings
 
 from shoersshopapi.api.v1.schemas import (
     BrandFilter,
@@ -17,18 +23,25 @@ from shoersshopapi.api.v1.schemas import (
 class ProductCrud(BaseCrud[Product]):
     model = Product
 
+    FOLDER = settings.minio.bucket_name
+
     # === CREATE ===
 
     @classmethod
     async def create_product(
         cls,
         session: AsyncSession,
-        data: ProductSchema,
+        data: ProductCreate,
+        product_logo: UploadFile
     ) -> Union[Product, None]:
 
-        data = ProductWithId(id=gen_uuid(), **data.model_dump())
+        primary_id = gen_uuid()
 
-        product = await cls.add(session, data)
+        logo_path = await image_service.upload_image(product_logo, cls.FOLDER + "/product", primary_id)
+
+        instance = ProductWithId(id=primary_id, logo=logo_path, **data.model_dump())
+
+        product = await cls.add(session, instance)
         await session.commit()
 
         return product
@@ -74,7 +87,26 @@ class ProductCrud(BaseCrud[Product]):
         session: AsyncSession,
         product_id: str,
         data: ProductUpdate,
+        logo: UploadFile | None = None,
     ):
+
+        product = await cls.find_one_or_none_by_id(session=session, id=product_id)
+
+        if not product:
+            raise HTTPException(
+                status_code=404,
+                detail="Product not found"
+            )
+
+        if logo:
+            new_logo_path = await image_service.replace_image(
+                old_path=product.logo,
+                file=logo,
+                folder=cls.FOLDER,
+                id=product.id,
+            )
+
+            data.logo = new_logo_path
 
         product = await cls.update_one_by_id(session, product_id, data)
         await session.commit()

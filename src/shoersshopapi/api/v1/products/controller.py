@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, File, UploadFile, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.core.database import database
@@ -14,20 +14,23 @@ from shoersshopapi.api.v1.schemas import (
     ProductFilter,
     ProductWithBrand,
     BrandFilter,
-    UserWithId
+    UserWithId,
+    ProductCreate
 )
 
 from shoersshopapi.api.v1.validators.http import (
-    oauth2_scheme,
-    get_current_auth_user,
     RoleRequired,
 )
 
+
+async def parse_product_data(data: str = Form(...)) -> ProductCreate:
+    return ProductCreate.model_validate_json(data)
 
 
 router = APIRouter(
     tags=["Products"]
 )
+
 
 PRODUCTNOTFOUND = HTTPException(
     status_code=404,
@@ -48,9 +51,17 @@ async def create_product(
         AsyncSession,
         Depends(database.get_session)
     ],
-    data: ProductSchema,
+    data: Annotated[
+        ProductCreate,
+        Depends(parse_product_data)
+    ],
+    logo: Annotated[
+        UploadFile,
+        File(...)
+    ]
 ):
-    product = await ProductCrud.create_product(session, data)
+
+    product = await ProductCrud.create_product(session, data, logo)
     return product
 
 
@@ -131,8 +142,12 @@ async def update_product(
     ],
     product_id: str,
     data: ProductUpdate,
+    logo: Annotated[
+        UploadFile,
+        File(...)
+    ] | None = None
 ):
-    product = await ProductCrud.update_product(session, product_id, data)
+    product = await ProductCrud.update_product(session, product_id, data, logo=logo)
 
     if not product:
         raise PRODUCTNOTFOUND

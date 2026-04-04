@@ -30,6 +30,7 @@ __all__ = (
     "ProductWithBrand",
     "ProductUpdate",
     "ProductFilter",
+    "ProductCreate",
 
     "AddressSchema",
     "AddressesSchema",
@@ -98,7 +99,8 @@ from .product_schemas import (
     ProductWithId,
     ProductWithBrand,
     ProductUpdate,
-    ProductFilter
+    ProductFilter,
+    ProductCreate
 )
 
 from .address_schemas import (
