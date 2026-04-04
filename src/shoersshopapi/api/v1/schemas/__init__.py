@@ -20,6 +20,14 @@ __all__ = (
     "OrderItemWithProduct",
     "OrderFull",
 
+    "FavoriteSchema",
+    "FavoriteWithId",
+    "FavoriteUpdate",
+    "FavoriteFilter",
+    "FavoriteAdd",
+    "FavoriteListResponse",
+    "FavoriteProductResponse",
+
     "BrandSchema",
     "BrandWithId",
     "BrandUpdate",
@@ -121,6 +129,16 @@ from .order_schemas import (
     OrderItemResponse,
     OrderItemWithProduct,
     OrderFull
+)
+
+from .favorite_schemas import (
+    FavoriteSchema,
+    FavoriteWithId,
+    FavoriteUpdate,
+    FavoriteFilter,
+    FavoriteAdd,
+    FavoriteListResponse,
+    FavoriteProductResponse,
 )
 
 from .cart_schemas import (
