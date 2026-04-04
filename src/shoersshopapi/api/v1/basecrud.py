@@ -38,6 +38,9 @@ class StatementBuilder:
 
     def filters(self, filters, model=None):
 
+        if filters is None:
+            return self
+
         filters_dump = filters.model_dump(exclude_none=True)
 
         if not filters_dump:
