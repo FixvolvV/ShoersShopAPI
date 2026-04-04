@@ -12,18 +12,17 @@ FILENOTFOUND = HTTPException(
         )
 
 @router.get(
-    "/images/{folder}/{filename}/",
+    "/",
 )
-async def get_file(folder: str, filename: str):
-    file_path = f"{folder}/{filename}"
+async def get_file(path: str):
 
-    exists = await s3_client.file_exists(file_path)
+    exists = await s3_client.file_exists(path)
     if not exists:
         raise FILENOTFOUND
 
-    file_data = await s3_client.get_file(file_path)
+    file_data = await s3_client.get_file(path)
 
-    ext = filename.rsplit(".", 1)[-1].lower()
+    ext = path.rsplit(".", 1)[-1].lower()
     content_types = {
         "png": "image/png",
         "jpg": "image/jpeg",
