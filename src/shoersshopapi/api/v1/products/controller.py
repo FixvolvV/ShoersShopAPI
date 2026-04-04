@@ -1,6 +1,6 @@
 from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, File, UploadFile, Form
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status, File, UploadFile, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.api.v1.schemas.size_schemas import SizeFilter
@@ -22,10 +22,6 @@ from shoersshopapi.api.v1.schemas import (
 from shoersshopapi.api.v1.validators.http import (
     RoleRequired,
 )
-
-
-def parse_product_data(data: str = Form(...)) -> ProductCreate:
-    return ProductCreate.model_validate_json(data)
 
 
 router = APIRouter(
@@ -52,17 +48,10 @@ async def create_product(
         AsyncSession,
         Depends(database.get_session)
     ],
-    data: Annotated[
-        ProductCreate,
-        Depends(parse_product_data)
-    ],
-    logo: Annotated[
-        UploadFile,
-        File(...)
-    ]
+    data: ProductCreate
 ):
 
-    product = await ProductCrud.create_product(session, data, logo)
+    product = await ProductCrud.create_product(session, data)
     return product
 
 
@@ -101,6 +90,7 @@ async def get_products(
     color: Color | None = None,
     brand_name: str | None = None,
     size: Annotated[list[int] | None, Query()] = None,
+    article: str | None = None,
     price_min: float | None = None,
     price_max: float | None = None,
     # Пагинация
@@ -110,6 +100,7 @@ async def get_products(
     product_filters = ProductFilter(
         title=title,
         color=color,
+        article=article,
         price_min=price_min,
         price_max=price_max,
     )
@@ -119,8 +110,7 @@ async def get_products(
     )
 
     size_filters = SizeFilter(
-        size=size,
-        count_min=1
+        size=size
     )
 
     products = await ProductCrud.get_all(
@@ -150,12 +140,34 @@ async def update_product(
     ],
     product_id: str,
     data: ProductUpdate,
+):
+    product = await ProductCrud.update_product(session, product_id, data)
+
+    if not product:
+        raise PRODUCTNOTFOUND
+
+    return product
+
+@router.patch(
+    "/logo/{product_id}",
+    response_model=ProductUpdate,
+)
+async def update_product_logo(
+    user: Annotated[
+        UserWithId,
+        Depends(RoleRequired("admin"))
+    ],
+    session: Annotated[
+        AsyncSession,
+        Depends(database.get_session)
+    ],
+    product_id: str,
     logo: Annotated[
         UploadFile,
         File(...)
-    ] | None = None
+    ]
 ):
-    product = await ProductCrud.update_product(session, product_id, data, logo=logo)
+    product = await ProductCrud.update_product_logo(session, product_id, logo)
 
     if not product:
         raise PRODUCTNOTFOUND
