@@ -6,11 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from shoersshopapi.core.database import database
 from .crud import BrandCrud
 
-from shoersshopapi.api.v1.schemas import BrandWithId, BrandFilter, UserWithId
+from shoersshopapi.api.v1.schemas import BrandWithId, UserWithId
 
 from shoersshopapi.api.v1.validators.http import (
-    oauth2_scheme,
-    get_current_auth_user,
     RoleRequired,
 )
 
@@ -92,7 +90,7 @@ async def get_brands(
     "/{brand_id}",
     response_model=BrandWithId,
 )
-async def update_brand_logo(
+async def update_brand(
     user: Annotated[
         UserWithId,
         Depends(RoleRequired("admin"))

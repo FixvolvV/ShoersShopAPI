@@ -30,7 +30,7 @@ class BrandCrud(BaseCrud[Brand]):
 
         primary_id = gen_uuid()
 
-        logo_path = await image_service.upload_image(brand_logo, cls.FOLDER, primary_id)
+        logo_path = await image_service.upload_image(brand_logo, cls.FOLDER + "/brand", primary_id)
 
         data = BrandWithId(
             id=primary_id,
