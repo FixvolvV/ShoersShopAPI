@@ -38,8 +38,10 @@ class StatementBuilder:
 
     def filters(self, filters, model=None):
 
-        if filters is None:
-            return self
+        filters_dump = filters.model_dump(exclude_none=True)
+
+        if not filters_dump:
+            return self 
 
         target_model = model or self.model
 
@@ -50,13 +52,16 @@ class StatementBuilder:
                     self._ensure_join(getattr(self.model, rel.key))
                     break
 
-        for field_name, value in filters.model_dump(exclude_none=True).items():
+        for field_name, value in filters_dump.items():
             if field_name.endswith("_min"):
                 column = getattr(target_model, field_name.removesuffix("_min"))
                 self._stmt = self._stmt.where(column >= value)
             elif field_name.endswith("_max"):
                 column = getattr(target_model, field_name.removesuffix("_max"))
                 self._stmt = self._stmt.where(column <= value)
+            elif isinstance(value, list):
+                column = getattr(target_model, field_name)
+                self._stmt = self._stmt.where(column.in_(value))
             else:
                 column = getattr(target_model, field_name)
                 self._stmt = self._stmt.where(column == value)
