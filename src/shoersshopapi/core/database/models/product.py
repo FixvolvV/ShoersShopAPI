@@ -25,6 +25,7 @@ class Product(Base):
     title: Mapped[str]
     price: Mapped[float]
     color: Mapped[Color]
+    logo: Mapped[str]
     avg_grade: Mapped[str | None]
     brand_id: Mapped[str | None] = mapped_column(ForeignKey("brands.id"))
 
