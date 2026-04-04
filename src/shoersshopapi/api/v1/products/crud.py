@@ -6,8 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.api.v1.basecrud import BaseCrud
 from shoersshopapi.api.v1.schemas.product_schemas import ProductCreate
+from shoersshopapi.api.v1.schemas.size_schemas import SizeFilter
 from shoersshopapi.api.v1.utils import gen_uuid
-from shoersshopapi.core.database.models import Product, Brand
+from shoersshopapi.core.database.models import Product, Brand, Size
 from shoersshopapi.core.minio.image_service import image_service
 
 from shoersshopapi.core.settings import settings
@@ -15,7 +16,6 @@ from shoersshopapi.core.settings import settings
 from shoersshopapi.api.v1.schemas import (
     BrandFilter,
     ProductWithId,
-    ProductSchema,
     ProductUpdate,
     ProductFilter
 )
@@ -54,6 +54,7 @@ class ProductCrud(BaseCrud[Product]):
             cls.stmt()
             .filters(ProductFilter(id=product_id))
             .load(Product.brand)
+            .load(Product.sizes)
             .build()
         )
         return await cls.find_one_or_none(session, stmt)
@@ -64,6 +65,7 @@ class ProductCrud(BaseCrud[Product]):
         session: AsyncSession,
         filters: ProductFilter | None = None,
         brand_filters: BrandFilter | None = None,
+        size_filters: SizeFilter | None = None,
         limit: int = 20,
         offset: int = 0,
     ):
@@ -71,7 +73,9 @@ class ProductCrud(BaseCrud[Product]):
             cls.stmt()
             .filters(filters)
             .filters(brand_filters, model=Brand)
+            .filters(size_filters, model=Size)
             .load(Product.brand)
+            .load(Product.sizes)
             .order_by(Product.price, desc=True)
             .limit(limit)
             .offset(offset)

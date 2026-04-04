@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-
+from pydantic import BaseModel, ConfigDict
+from typing import List
 
 class SizeSchema(BaseModel):
     product_id: str
@@ -15,6 +15,8 @@ class SizeUpdate(BaseModel):
 class SizeFilter(BaseModel):
     id: str | None = None
     product_id: str | None = None
-    size: int | None = None
+    size: List[int] | int | None = None
     count_min: int | None = None
     count_max: int | None = None
+
+    model_config = ConfigDict(from_attributes=True)

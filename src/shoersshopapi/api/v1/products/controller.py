@@ -1,14 +1,15 @@
-from typing import Annotated
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status, File, UploadFile, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from shoersshopapi.api.v1.schemas.size_schemas import SizeFilter
 from shoersshopapi.core.database import database
 from shoersshopapi.core.utils.enum import Color
 
 from .crud import ProductCrud
 from shoersshopapi.api.v1.schemas import (
-    ProductSchema,
+    ProductWithAll,
     ProductWithId,
     ProductUpdate,
     ProductFilter,
@@ -23,7 +24,7 @@ from shoersshopapi.api.v1.validators.http import (
 )
 
 
-async def parse_product_data(data: str = Form(...)) -> ProductCreate:
+def parse_product_data(data: str = Form(...)) -> ProductCreate:
     return ProductCreate.model_validate_json(data)
 
 
@@ -67,7 +68,7 @@ async def create_product(
 
 @router.get(
     "/{product_id}",
-    response_model=ProductWithBrand,
+    response_model=ProductWithAll,
     summary="Получить продукт по ID",
 )
 async def get_product(
@@ -87,7 +88,7 @@ async def get_product(
 
 @router.get(
     "/",
-    response_model=list[ProductWithBrand],
+    response_model=list[ProductWithAll],
     summary="Получить список продуктов",
 )
 async def get_products(
@@ -99,6 +100,7 @@ async def get_products(
     title: str | None = None,
     color: Color | None = None,
     brand_name: str | None = None,
+    size: Annotated[list[int] | None, Query()] = None,
     price_min: float | None = None,
     price_max: float | None = None,
     # Пагинация
@@ -116,10 +118,16 @@ async def get_products(
         brand_name=brand_name
     )
 
+    size_filters = SizeFilter(
+        size=size,
+        count_min=1
+    )
+
     products = await ProductCrud.get_all(
         session,
         filters=product_filters,
         brand_filters=brand_filters,
+        size_filters=size_filters,
         limit=limit,
         offset=(page - 1) * limit,
     )
