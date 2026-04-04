@@ -128,7 +128,7 @@ class ProductCrud(BaseCrud[Product]):
                 new_logo_path = await image_service.replace_image(
                     old_path=product.logo,
                     file=logo,
-                    folder=cls.FOLDER,
+                    folder=cls.FOLDER + "/product",
                     id=product.id,
                 )
 
