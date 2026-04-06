@@ -19,7 +19,7 @@ async def create_default_admin():
             existing = await UserCrud.get_by_email(session, "FixV@example.com")
 
             if existing:
-                print(f"👤 Админ уже существует: {"FixV@example.com"}")
+                print("") if settings.run.mode == "production" else print(f"👤 Админ уже существует: {"FixV@example.com"}")
                 return
 
             admin_data = UserSchema(
@@ -37,10 +37,10 @@ async def create_default_admin():
             if not admin:
                 raise
 
-            print(f"✅ Админ создан: {admin.email} → {admin.id}")
+            print("") if settings.run.mode == "production" else print(f"✅ Админ создан: {admin.email} → {admin.id}")
 
         except Exception as e:
-            print(f"❌ Ошибка создания админа: {e}")
+             print("") if settings.run.mode == "production" else print(f"❌ Ошибка создания админа: {e}")
 
 
 @asynccontextmanager
