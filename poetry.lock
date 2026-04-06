@@ -261,6 +261,22 @@ typing-extensions = ">=4.12"
 tz = ["tzdata"]
 
 [[package]]
+name = "alembic-postgresql-enum"
+version = "1.10.0"
+description = "Alembic autogenerate support for creation, alteration and deletion of enums"
+optional = false
+python-versions = ">=3.7.0"
+groups = ["main"]
+files = [
+    {file = "alembic_postgresql_enum-1.10.0-py3-none-any.whl", hash = "sha256:39297cb5dc0e71a3e08df1feeab9ffcc1b6aac0be02bf578748d74c442cd3fbf"},
+    {file = "alembic_postgresql_enum-1.10.0.tar.gz", hash = "sha256:ea23481de3d6a00d68d369f92a46ff4fa27b2575e39c583145f1e23ea9c7511d"},
+]
+
+[package.dependencies]
+alembic = ">=1.7"
+sqlalchemy = ">=1.4"
+
+[[package]]
 name = "annotated-doc"
 version = "0.0.4"
 description = "Document parameters, class attributes, return types, and variables inline, with Annotated."
@@ -3453,4 +3469,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14"
-content-hash = "87d11ef5cf673b09cb64a0e28e2e0056caf804b018c0975dda8d68369f2cacfe"
+content-hash = "3eb25dc071a568e2f47589c51633ed7e9921ae7c65c8c30ba6f22fd1e7f56421"
