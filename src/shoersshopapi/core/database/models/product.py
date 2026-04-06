@@ -3,7 +3,7 @@ from typing import (
     TYPE_CHECKING,
     Optional
 )
-from sqlalchemy import ForeignKey
+from sqlalchemy import Double, ForeignKey
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -27,7 +27,7 @@ class Product(Base):
     color: Mapped[Color]
     logo: Mapped[str | None]
     article: Mapped[str]
-    avg_grade: Mapped[str | None]
+    avg_grade: Mapped[float | None]
     brand_id: Mapped[str | None] = mapped_column(ForeignKey("brands.id"))
 
     sizes: Mapped[List["Size"]] = relationship(

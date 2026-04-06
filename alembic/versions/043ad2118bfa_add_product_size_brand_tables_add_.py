@@ -25,7 +25,7 @@ def upgrade() -> None:
     sa.Column('title', sa.String(), nullable=False),
     sa.Column('price', sa.Float(), nullable=False),
     sa.Column('color', sa.Enum('black', 'white', 'blue', 'gray', name='color'), nullable=False),
-    sa.Column('avg_grade', sa.String(), nullable=False),
+    sa.Column('avg_grade', sa.Float(), nullable=False),
     sa.Column('id', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
