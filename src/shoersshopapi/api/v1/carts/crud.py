@@ -221,11 +221,13 @@ class CartCrud(BaseCrud[Cart]):
         if not cart:
             raise CARTNOTFOUND
 
-
         query = (
             select(CartItem)
             .where(CartItem.cart_id == cart.id)
-            .options(selectinload(CartItem.size_id))
+            .options(
+                selectinload(CartItem.items)
+                .selectinload(Size.product)
+            )
         )
         result = await session.execute(query)
         return list(result.scalars().all())

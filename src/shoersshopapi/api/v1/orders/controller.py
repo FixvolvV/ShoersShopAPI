@@ -10,7 +10,7 @@ from shoersshopapi.core.utils.enum import Status
 
 from .crud import OrderCrud
 from shoersshopapi.api.v1.schemas import (
-    OrderSchema,
+    OrderCreate,
     OrderUpdate,
     OrderFilter,
     OrderWithId,
@@ -48,7 +48,7 @@ async def create_order(
         AsyncSession,
         Depends(database.get_session)
     ],
-    data: OrderSchema,
+    data: OrderCreate,
 ):
 
     order = await OrderCrud.create_order(session, user.id, data)
@@ -83,10 +83,11 @@ async def get_order(
     for order_item in order.order_items:
         items.append({
             "id": order_item.id,
-            "product_id": order_item.product_id,
+            "size_id": order_item.size_id,
+            "product_id": order_item.items.product_id,
             "quantity": order_item.quantity,
-            "title": order_item.product.title,
-            "price": order_item.product.price,
+            "title": order_item.items.product.title,
+            "price": order_item.items.product.price,
         })
 
     return {

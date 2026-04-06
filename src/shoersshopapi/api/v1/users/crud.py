@@ -2,6 +2,11 @@ from typing import (
     Union
 )
 
+import pprint
+
+from sqlalchemy import select, inspect
+from sqlalchemy.orm import selectinload
+
 from fastapi import HTTPException
 
 from pydantic import BaseModel
@@ -154,9 +159,13 @@ class UserCrud(BaseCrud[User]):
         stmt = (
             cls.stmt()
             .filters(UserFilter(id=user_id))
-            .load(User.addresses, User.orders, User.reviews)
+            .load(User.addresses)
+            .load(User.orders)
+            .load(User.reviews)
+            .load(User.favorites)
             .build()
         )
+
         return await cls.find_one_or_none(session, stmt)
 
     # === READ: список пользователей ===

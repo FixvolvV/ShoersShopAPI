@@ -21,6 +21,10 @@ from shoersshopapi.api.v1.validators.http import (
     RoleRequired,
 )
 
+from sqlalchemy import select
+from shoersshopapi.core.database.models import Address
+
+
 router = APIRouter(
     tags=["User"],
     dependencies=[Depends(oauth2_scheme)]
@@ -78,12 +82,12 @@ async def get_user(
     
     if not user_data:
         raise USERNOTFOUND
-    
+
     return user_data
 
 
 @router.get(
-    "/{user_id}/full",
+    "/{user_id}/full/",
     response_model=UserFull,
     summary="Получить пользователя со всеми связями",
 )
@@ -98,12 +102,12 @@ async def get_user_full(
     ],
     user_id: str,
 ):
-    """Пользователь с адресами, заказами и отзывами"""
-    user_data = await UserCrud.get_full(session, user_id)
     
+    user_data = await UserCrud.get_full(session, user_id)
+
     if not user_data:
         raise USERNOTFOUND
-    
+
     return user_data
 
 
@@ -124,7 +128,7 @@ async def get_user_orders(
     user_id: str,
 ):
     user_data = await UserCrud.get_with_orders(session, user_id)
-    
+
     if not user_data:
         raise USERNOTFOUND
     

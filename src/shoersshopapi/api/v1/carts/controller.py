@@ -43,6 +43,7 @@ async def get_cart(
     cart = await CartCrud.get_cart_with_items(session, user.id)
 
     if not cart:
+        
         return {"id": None, "user_id": user.id, "items": [], "total_amount": 0}
 
     # Формируем ответ с информацией о товарах

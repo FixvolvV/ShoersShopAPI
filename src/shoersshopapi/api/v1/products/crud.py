@@ -48,8 +48,7 @@ class ProductCrud(BaseCrud[Product]):
         stmt = (
             cls.stmt()
             .filters(ProductFilter(id=product_id))
-            .load(Product.brand)
-            .load(Product.sizes)
+            .load(Product.brand, Product.sizes)
             .build()
         )
         return await cls.find_one_or_none(session, stmt)

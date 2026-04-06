@@ -12,10 +12,10 @@ from shoersshopapi.api.v1.basecrud import BaseCrud
 from shoersshopapi.api.v1.utils import gen_uuid
 from shoersshopapi.api.v1.carts.crud import CartCrud
 
-from shoersshopapi.core.database.models import Order, OrderItem, Address
+from shoersshopapi.core.database.models import Order, OrderItem, Address, Size
 from shoersshopapi.core.utils.enum import Status
 
-from  shoersshopapi.api.v1.schemas import OrderSchema, OrderWithId, OrderUpdate, OrderFilter
+from  shoersshopapi.api.v1.schemas import OrderCreate, OrderWithId, OrderUpdate, OrderFilter
 
 ADDRESSNOTFOUND = HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -38,8 +38,9 @@ class OrderCrud(BaseCrud[Order]):
         cls,
         session: AsyncSession,
         user_id: str,
-        data: OrderSchema,
+        data: OrderCreate,
     ) -> Union[Order, None]:
+
         # Проверяем адрес
         address = await session.get(Address, data.address_id)
         if not address:
@@ -59,11 +60,12 @@ class OrderCrud(BaseCrud[Order]):
 
         # Считаем сумму
         total_amount = 0
-        for item in cart_items:
-            total_amount += int(item.product.price * item.quantity)
+        for inst in cart_items:
+            total_amount += int(inst.items.product.price * inst.quantity)
 
         # Создаём заказ
         order_id = gen_uuid()
+
         order_data = OrderWithId(
             id=order_id,
             user_id=user_id,
@@ -80,7 +82,7 @@ class OrderCrud(BaseCrud[Order]):
             order_item = OrderItem(
                 id=gen_uuid(),
                 order_id=order_id,
-                product_id=cart_item.product_id,
+                size_id=cart_item.size_id,
                 quantity=cart_item.quantity,
             )
             session.add(order_item)
@@ -106,7 +108,8 @@ class OrderCrud(BaseCrud[Order]):
             select(Order)
             .where(Order.id == order_id)
             .options(
-                selectinload(Order.order_items).selectinload(OrderItem.product),
+                selectinload(Order.order_items)
+                .selectinload(OrderItem.items),
                 selectinload(Order.address),
             )
         )
@@ -125,7 +128,11 @@ class OrderCrud(BaseCrud[Order]):
         query = (
             select(Order)
             .where(Order.user_id == user_id)
-            .options(selectinload(Order.order_items))
+            .options(
+                selectinload(Order.order_items)
+                .selectinload(OrderItem.items)
+                .selectinload(Size.product)
+            )
             .order_by(Order.order_date.desc())
             .limit(limit)
             .offset(offset)
