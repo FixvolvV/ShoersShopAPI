@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import (
     Optional,
     Sequence
@@ -20,6 +20,8 @@ class AddressWithId(AddressSchema):
 
     id: str
     user_id: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 class AddressesSchema(BaseModel):
 

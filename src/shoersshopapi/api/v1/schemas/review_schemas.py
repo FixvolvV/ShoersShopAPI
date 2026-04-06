@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import (
     Optional,
     Sequence
@@ -17,6 +17,8 @@ class ReviewWithId(ReviewSchema):
 
     id: str
     user_id: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 class ReviewUpdate(BaseModel):
     comment_text: str | None = None

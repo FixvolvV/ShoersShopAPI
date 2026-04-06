@@ -11,6 +11,8 @@ class FavoriteWithId(FavoriteSchema):
 
     id: str
 
+    model_config = ConfigDict(from_attributes=True)
+
 class FavoriteAdd(BaseModel):
     product_id: str
 

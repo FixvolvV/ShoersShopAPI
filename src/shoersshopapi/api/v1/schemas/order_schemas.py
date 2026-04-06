@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import (
     Optional
 )
@@ -22,6 +22,8 @@ class OrderWithId(OrderSchema):
     id: str
     user_id: str
 
+    model_config = ConfigDict(from_attributes=True)
+
 class OrdersSchema(BaseModel):
 
     orders: Optional[Optional[OrderWithId]] = None
@@ -44,12 +46,15 @@ class OrderFilter(BaseModel):
     total_amount: float | None = None
     status: Status | str | None = None
 
+#-------------- Order Forms -------------- 
+
+class OrderCreate(BaseModel):
+    address_id: str
 
 class OrderItemResponse(BaseModel):
     id: str
     product_id: str
     quantity: int
-
 
 class OrderItemWithProduct(BaseModel):
     id: str

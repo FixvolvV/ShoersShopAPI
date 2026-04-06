@@ -19,6 +19,7 @@ __all__ = (
     "OrderItemResponse",
     "OrderItemWithProduct",
     "OrderFull",
+    "OrderCreate",
 
     "FavoriteSchema",
     "FavoriteWithId",
@@ -128,7 +129,8 @@ from .order_schemas import (
     OrderFilter,
     OrderItemResponse,
     OrderItemWithProduct,
-    OrderFull
+    OrderFull,
+    OrderCreate
 )
 
 from .favorite_schemas import (

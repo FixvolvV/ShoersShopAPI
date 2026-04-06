@@ -1,13 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import (
     List
 )
 
+from shoersshopapi.core.database.models import favorite
 from shoersshopapi.core.utils.enum import Role
 
 from .address_schemas import AddressWithId
 from .order_schemas import OrderWithId
 from .review_schemas import ReviewWithId
+from .favorite_schemas import FavoriteWithId
 
 #-------------- User Schemes -------------- 
 
@@ -40,9 +42,10 @@ class UserUpdate(BaseModel):
     role: Role | str | None = None
 
 class UserFull(UserWithId):
-    addresses: list[AddressWithId] = []
-    orders: list[OrderWithId] = []
-    reviews: list[ReviewWithId] = []
+    reviews: List[ReviewWithId] | None = None
+    orders: List[OrderWithId] | None = None 
+    addresses: List[AddressWithId] | None = None
+    favorites: List[FavoriteWithId] | None = None
 
 #-------------- User Filters -------------- 
 
@@ -51,6 +54,9 @@ class UserFilter(BaseModel):
     phone: str | None = None
     email: str | None = None
     role: Role | str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 #-------------- User Forms -------------- 
 
