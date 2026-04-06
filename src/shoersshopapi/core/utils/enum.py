@@ -18,8 +18,13 @@ class Rating(StrEnum):
     very_good = "very_good"
 
 class Color(StrEnum):
-    black = "black"
-    white = "white"
-    blue = "blue"
-    gray = "gray"
+    black = "чёрный"
+    white = "белый"
+    red = "красный"
+    orange = "оранжевый"
+    yellow = "жёлтый"
+    green = "зелёный"
+    light_blue = "голубой"
+    blue = "синий"
+    purple = "фиолетовый"
     
