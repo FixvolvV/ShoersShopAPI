@@ -19,7 +19,6 @@ class UserRelationMixin:
     _user_id_unique: bool = False
     _user_back_populates: str | None = None
     _user_load_strategy: _LazyLoadArgumentType = "noload"
-    _user_cascade_strategy: str = "all, delete-orphan"
 
     @declared_attr
     def user_id(cls) -> Mapped[str]:
@@ -35,8 +34,6 @@ class UserRelationMixin:
             "User",
             back_populates=cls._user_back_populates,
             lazy=cls._user_load_strategy,
-            cascade=cls._user_cascade_strategy,
-            single_parent=True
         )
 
 class ProductRelationMixin:
@@ -44,7 +41,6 @@ class ProductRelationMixin:
     _product_id_unique: bool = False
     _product_back_populates: str | None = None
     _product_load_strategy: _LazyLoadArgumentType = "noload"
-    _product_cascade_strategy: str = "all, delete-orphan"
 
     @declared_attr
     def product_id(cls) -> Mapped[str]:
@@ -60,6 +56,4 @@ class ProductRelationMixin:
             "Product",
             back_populates=cls._product_back_populates,
             lazy=cls._product_load_strategy,
-            cascade=cls._product_cascade_strategy,
-            single_parent=True
         )

@@ -39,31 +39,31 @@ class User(Base):
     social_link: Mapped[List[str] | None] = mapped_column(JSON, default=list)
     role: Mapped[Role] = mapped_column(default=Role.user,  server_default=text("'user'"))
 
-    reviews: Mapped[List["Review"] | None] = relationship(
+    reviews: Mapped[List["Review"]] = relationship(
         back_populates="user",
-        lazy="noload",
+        lazy="raise",
         cascade="all, delete-orphan"
     )
 
-    orders: Mapped[List["Order"] | None] = relationship(
+    orders: Mapped[List["Order"]] = relationship(
         back_populates="user",
-        lazy="noload"
+        lazy="raise"
     )
 
-    addresses: Mapped[List["Address"] | None] = relationship(
+    addresses: Mapped[List["Address"]] = relationship(
         back_populates="user",
-        lazy="noload"
+        lazy="raise"
     )
 
-    favorites: Mapped[List["Favorite"] | None] = relationship(
+    favorites: Mapped[List["Favorite"]] = relationship(
         back_populates="user",
-        lazy="noload",
+        lazy="raise",
         cascade="all, delete-orphan"
     )
 
     cart: Mapped[Optional["Cart"]] = relationship(
         back_populates="user",
-        lazy="noload",
+        lazy="raise",
         cascade="all, delete-orphan"
     )
 

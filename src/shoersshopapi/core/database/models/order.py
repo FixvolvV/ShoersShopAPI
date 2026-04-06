@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 
 class Order(UserRelationMixin, Base):
     _user_back_populates = "orders"
+    _user_load_strategy = "raise"
 
     order_date: Mapped[datetime]
     total_amount: Mapped[int]

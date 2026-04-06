@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 class Cart(UserRelationMixin, Base):
     _user_back_populates = "cart"
+    _user_load_strategy = "raise"
     _user_id_unique = True
 
     sizes: Mapped[List["Size"]] = relationship (
