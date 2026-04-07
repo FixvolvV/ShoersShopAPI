@@ -25,7 +25,7 @@ class UserSchema(UserUnique):
     patronymic: str
     password: bytes | str
     role: Role | str = Role.user
-    social_link: List[str] | None = None
+    social_link: List[str] = []
 
 class UserWithId(UserSchema):
 

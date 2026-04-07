@@ -36,7 +36,7 @@ class User(Base):
     surname: Mapped[str]
     patronymic: Mapped[str]
     password: Mapped[bytes]
-    social_link: Mapped[List[str] | None] = mapped_column(JSON, default=list)
+    social_link: Mapped[List[str]] = mapped_column(JSON, default=list)
     role: Mapped[Role] = mapped_column(default=Role.user,  server_default=text("'user'"))
 
     reviews: Mapped[List["Review"]] = relationship(

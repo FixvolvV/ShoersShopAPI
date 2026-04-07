@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, model_validator, EmailStr
 
 from shoersshopapi.core.utils.enum import Role
@@ -16,4 +16,4 @@ class RegisterSchema(BaseModel):
     name: str
     patronymic: str
     password: str
-    social_link: List[str]
+    social_link: List[str] = []
