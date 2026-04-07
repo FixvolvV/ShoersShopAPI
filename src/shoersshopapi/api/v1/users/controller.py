@@ -87,7 +87,7 @@ async def get_user(
 
 
 @router.get(
-    "/{user_id}/full/",
+    "/{user_id}/full",
     response_model=UserFull,
     summary="Получить пользователя со всеми связями",
 )

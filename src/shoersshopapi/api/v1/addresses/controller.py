@@ -71,7 +71,7 @@ async def get_address(
 
 
 @router.get(
-    "/user/",
+    "/user",
     response_model=list[AddressWithId],
 )
 async def get_self_addresses(

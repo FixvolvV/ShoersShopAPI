@@ -14,7 +14,7 @@ FILENOTFOUND = HTTPException(
         )
 
 @router.get(
-    "/images/",
+    "/images",
 )
 async def get_file(path: str):
 
@@ -39,28 +39,28 @@ async def get_file(path: str):
     )
 
 @router.get(
-    "/filters/sizes/",
+    "/filters/sizes",
 )
 async def get_sizes_list():
 
     return [{"label": item.name, "value": item.value} for item in ASizes]
 
 @router.get(
-    "/filters/category/",
+    "/filters/category",
 )
 async def get_category_list():
 
     return [{"label": item.name, "value": item.value} for item in Category]
 
 @router.get(
-    "/filters/color/",
+    "/filters/color",
 )
 async def get_color_list():
 
     return [{"label": item.name, "value": item.value} for item in Color]
 
 @router.get(
-    "/filters/raiting/",
+    "/filters/raiting",
 )
 async def get_raiting_list():
 

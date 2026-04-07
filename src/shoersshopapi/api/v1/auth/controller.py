@@ -31,7 +31,7 @@ USERNOTFOUND = HTTPException(
 #  REGISTER
 
 @router.post(
-    "/register/",
+    "/register",
     response_model=TokenInfo,
     status_code=status.HTTP_201_CREATED,
 )
@@ -64,7 +64,7 @@ async def register(
 #  LOGIN
 
 @router.post(
-    "/login/",
+    "/login",
     response_model=TokenInfo,
     summary="Авторизация",
 )
@@ -89,7 +89,7 @@ async def login(
 #  REFRESH
 
 @router.post(
-    "/refresh/",
+    "/refresh",
     response_model=TokenInfo,
     summary="Обновить токен",
 )
@@ -116,7 +116,7 @@ async def refresh_token(
 #  ME
 
 @router.get(
-    "/me/",
+    "/me",
     response_model=UserFull,
     summary="Текущий пользователь",
 )
