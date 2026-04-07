@@ -16,8 +16,9 @@ class ProductSchema(BaseModel):
     price: float
     color: Color
     logo: str | None = None
+    category: str
     article: str
-    avg_grade: str | None = None
+    avg_grade: float
 
 class ProductWithId(ProductSchema):
     id: str
@@ -41,7 +42,8 @@ class ProductUpdate(BaseModel):
     color: Color | None = None
     logo: str | None = None
     article: str | None = None
-    avg_grade: str | None = None
+    category: str | None = None
+    avg_grade: float | None = None
 
 #-------------- Product Filters -------------- 
 
@@ -50,6 +52,7 @@ class ProductFilter(BaseModel):
     title: str | None = None
     color: Color | None = None
     article: str | None = None
+    category: str | None = None
     price_min: float | None = None
     price_max: float | None = None
 
@@ -63,4 +66,5 @@ class ProductCreate(BaseModel):
     price: float
     color: Color
     article: str
-    avg_grade: str | None = None
+    category: str
+    avg_grade: float

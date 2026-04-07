@@ -27,7 +27,8 @@ class Product(Base):
     color: Mapped[Color]
     logo: Mapped[str | None]
     article: Mapped[str]
-    avg_grade: Mapped[float | None]
+    category: Mapped[str]
+    avg_grade: Mapped[float]
     brand_id: Mapped[str | None] = mapped_column(ForeignKey("brands.id"))
 
     sizes: Mapped[List["Size"]] = relationship(
