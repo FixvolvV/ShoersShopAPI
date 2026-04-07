@@ -34,7 +34,7 @@ class Category(StrEnum):
     basketball = "баскетбол"
     training = "тренинг"
 
-class Sizes(IntEnum):
+class ASizes(IntEnum):
     size_39 = 39
     size_40 = 40
     size_41 = 41

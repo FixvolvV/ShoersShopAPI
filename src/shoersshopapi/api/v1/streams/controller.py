@@ -4,6 +4,8 @@ from io import BytesIO
 
 from shoersshopapi.core.minio import s3_client
 
+from shoersshopapi.core.utils.enum import Color, Category, ASizes, Rating
+
 router = APIRouter(tags=["Streams"])
 
 FILENOTFOUND = HTTPException(
@@ -12,7 +14,7 @@ FILENOTFOUND = HTTPException(
         )
 
 @router.get(
-    "/",
+    "/images/",
 )
 async def get_file(path: str):
 
@@ -35,3 +37,31 @@ async def get_file(path: str):
         BytesIO(file_data),
         media_type=content_type,
     )
+
+@router.get(
+    "/filters/sizes/",
+)
+async def get_sizes_list():
+
+    return [{"label": item.name, "value": item.value} for item in ASizes]
+
+@router.get(
+    "/filters/sizes/",
+)
+async def get_category_list():
+
+    return [{"label": item.name, "value": item.value} for item in Category]
+
+@router.get(
+    "/filters/sizes/",
+)
+async def get_color_list():
+
+    return [{"label": item.name, "value": item.value} for item in Color]
+
+@router.get(
+    "/filters/sizes/",
+)
+async def get_raiting_list():
+
+    return [{"label": item.name, "value": item.value} for item in Rating]
