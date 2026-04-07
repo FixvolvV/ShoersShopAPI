@@ -30,6 +30,7 @@ async def create_default_admin():
                 patronymic="FixV",
                 password="FixvolvV1234",
                 role="admin",
+                social_link="https://naxyi_idi"
             )
 
             admin = await UserCrud.create_user(session, admin_data)
