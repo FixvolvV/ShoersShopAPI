@@ -1,4 +1,4 @@
-from sqlalchemy import delete, text
+from sqlalchemy import delete, text, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from typing import (
@@ -20,7 +20,10 @@ class Size(ProductRelationMixin, Base):
     _product_back_populates = "sizes"
 
     count: Mapped[int]
-    size: Mapped[ASizes] = mapped_column(server_default=text("'size_39'"))
+    size: Mapped[ASizes] = mapped_column(
+    Enum(ASizes, values_callable=lambda obj: [e.value for e in obj]), 
+    server_default="39"
+)
 
     orders: Mapped[List["Order"]] = relationship(
         secondary="orderitems",
