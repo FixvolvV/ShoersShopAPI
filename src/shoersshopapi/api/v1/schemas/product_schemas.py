@@ -4,7 +4,7 @@ from typing import List
 
 from pydantic_core.core_schema import model_field
 
-from shoersshopapi.core.utils.enum import Color
+from shoersshopapi.core.utils.enum import Color, Category
 from .brand_schemas import BrandWithId
 from .size_schemas import SizeWithId
 
@@ -16,7 +16,7 @@ class ProductSchema(BaseModel):
     price: float
     color: Color
     logo: str | None = None
-    category: str
+    category: Category
     article: str
     avg_grade: float
 
@@ -42,7 +42,7 @@ class ProductUpdate(BaseModel):
     color: Color | None = None
     logo: str | None = None
     article: str | None = None
-    category: str | None = None
+    category: Category | None = None
     avg_grade: float | None = None
 
 #-------------- Product Filters -------------- 
@@ -52,7 +52,7 @@ class ProductFilter(BaseModel):
     title: str | None = None
     color: Color | None = None
     article: str | None = None
-    category: str | None = None
+    category: Category | None = None
     price_min: float | None = None
     price_max: float | None = None
 
@@ -66,5 +66,5 @@ class ProductCreate(BaseModel):
     price: float
     color: Color
     article: str
-    category: str
+    category: Category
     avg_grade: float

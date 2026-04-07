@@ -1,9 +1,11 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List
 
+from shoersshopapi.core.utils.enum import ASizes
+
 class SizeSchema(BaseModel):
     product_id: str
-    size: int
+    size: ASizes
     count: int
 
 class SizeWithId(SizeSchema):
@@ -15,7 +17,7 @@ class SizeUpdate(BaseModel):
 class SizeFilter(BaseModel):
     id: str | None = None
     product_id: str | None = None
-    size: List[int] | int | None = None
+    size: List[ASizes] | int | None = None
     count_min: int | None = None
     count_max: int | None = None
 

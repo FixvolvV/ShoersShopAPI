@@ -12,7 +12,7 @@ from sqlalchemy.orm import (
 
 from .base import Base
 
-from shoersshopapi.core.utils.enum import Color
+from shoersshopapi.core.utils.enum import Color, Category
 
 if TYPE_CHECKING:
     from .size import Size
@@ -27,7 +27,7 @@ class Product(Base):
     color: Mapped[Color]
     logo: Mapped[str | None]
     article: Mapped[str]
-    category: Mapped[str]
+    category: Mapped[Category]
     avg_grade: Mapped[float]
     brand_id: Mapped[str | None] = mapped_column(ForeignKey("brands.id"))
 

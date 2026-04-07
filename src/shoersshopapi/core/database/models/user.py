@@ -6,7 +6,7 @@ from typing import (
 from sqlalchemy import (
     JSON,
     delete,
-    text
+    text,
 )
 from sqlalchemy.orm import (
     Mapped,

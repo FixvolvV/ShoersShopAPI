@@ -1,5 +1,5 @@
 from sqlalchemy import delete
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from typing import (
     TYPE_CHECKING,
@@ -8,6 +8,8 @@ from typing import (
 
 from .base import Base
 from .mixin import ProductRelationMixin
+
+from shoersshopapi.core.utils.enum import ASizes
 
 if TYPE_CHECKING:
     from .order import Order
@@ -18,7 +20,7 @@ class Size(ProductRelationMixin, Base):
     _product_back_populates = "sizes"
 
     count: Mapped[int]
-    size: Mapped[int]
+    size: Mapped[ASizes] = mapped_column(server_default="39")
 
     orders: Mapped[List["Order"]] = relationship(
         secondary="orderitems",

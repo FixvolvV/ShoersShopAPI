@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import IntEnum, StrEnum
 
 class Role(StrEnum):
     user = "user"
@@ -27,4 +27,20 @@ class Color(StrEnum):
     light_blue = "голубой"
     blue = "синий"
     purple = "фиолетовый"
+
+class Category(StrEnum):
+    running = "бег"
+    everyday = "повседневные"
+    basketball = "баскетбол"
+    training = "тренинг"
+
+class Sizes(IntEnum):
+    size_39 = 39
+    size_40 = 40
+    size_41 = 41
+    size_42 = 42
+    size_43 = 43
+    size_44 = 44
+    size_45 = 45
+
     
