@@ -16,4 +16,4 @@ class RegisterSchema(BaseModel):
     name: str
     patronymic: str
     password: str
-    social_link: List[str] = []
+    social_link: str
