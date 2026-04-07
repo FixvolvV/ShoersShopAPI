@@ -46,21 +46,21 @@ async def get_sizes_list():
     return [{"label": item.name, "value": item.value} for item in ASizes]
 
 @router.get(
-    "/filters/sizes/",
+    "/filters/category/",
 )
 async def get_category_list():
 
     return [{"label": item.name, "value": item.value} for item in Category]
 
 @router.get(
-    "/filters/sizes/",
+    "/filters/color/",
 )
 async def get_color_list():
 
     return [{"label": item.name, "value": item.value} for item in Color]
 
 @router.get(
-    "/filters/sizes/",
+    "/filters/raiting/",
 )
 async def get_raiting_list():
 
