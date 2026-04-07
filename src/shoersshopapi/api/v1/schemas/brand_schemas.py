@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel, ConfigDict
 
 #-------------- Brand Schemes -------------- 
@@ -18,6 +19,6 @@ class BrandUpdate(BaseModel):
 
 class BrandFilter(BaseModel):
     id: str | None = None
-    brand_name: str | None = None
+    brand_name: List[str] | None = None
 
     model_config = ConfigDict(from_attributes=True)

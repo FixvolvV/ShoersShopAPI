@@ -17,7 +17,7 @@ class SizeUpdate(BaseModel):
 class SizeFilter(BaseModel):
     id: str | None = None
     product_id: str | None = None
-    size: List[ASizes] | int | None = None
+    size: List[ASizes] | ASizes | None = None
     count_min: int | None = None
     count_max: int | None = None
 

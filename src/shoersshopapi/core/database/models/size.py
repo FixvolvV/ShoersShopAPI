@@ -1,4 +1,4 @@
-from sqlalchemy import delete
+from sqlalchemy import delete, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from typing import (
@@ -20,7 +20,7 @@ class Size(ProductRelationMixin, Base):
     _product_back_populates = "sizes"
 
     count: Mapped[int]
-    size: Mapped[ASizes] = mapped_column(server_default="39")
+    size: Mapped[ASizes] = mapped_column(server_default=text("'size_39'"))
 
     orders: Mapped[List["Order"]] = relationship(
         secondary="orderitems",

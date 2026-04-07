@@ -50,9 +50,9 @@ class ProductUpdate(BaseModel):
 class ProductFilter(BaseModel):
     id: str | None = None
     title: str | None = None
-    color: Color | None = None
+    color: List[Color] | None = None
     article: str | None = None
-    category: Category | None = None
+    category: List[Category] | None = None
     price_min: float | None = None
     price_max: float | None = None
 

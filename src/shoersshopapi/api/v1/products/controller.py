@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.api.v1.schemas.size_schemas import SizeFilter
 from shoersshopapi.core.database import database
-from shoersshopapi.core.utils.enum import Color
+from shoersshopapi.core.utils.enum import ASizes, Color, Category
 
 from .crud import ProductCrud
 from shoersshopapi.api.v1.schemas import (
@@ -87,9 +87,10 @@ async def get_products(
     ],
     # Фильтры продукта
     title: str | None = None,
-    color: Color | None = None,
-    brand_name: str | None = None,
-    size: Annotated[list[int] | None, Query()] = None,
+    color: Annotated[list[Color] | None, Query()]  = None,
+    brand_name: Annotated[list[str] | None, Query()] = None,
+    size: Annotated[list[ASizes] | None, Query()] = None,
+    category: Annotated[list[Category] | None, Query()] = None,
     article: str | None = None,
     price_min: float | None = None,
     price_max: float | None = None,
@@ -101,6 +102,7 @@ async def get_products(
         title=title,
         color=color,
         article=article,
+        category=category,
         price_min=price_min,
         price_max=price_max,
     )

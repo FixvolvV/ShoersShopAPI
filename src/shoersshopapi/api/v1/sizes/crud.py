@@ -12,6 +12,7 @@ from shoersshopapi.api.v1.schemas import (
     SizeUpdate,
     SizeFilter
 )
+from shoersshopapi.core.utils.enum import ASizes
 
 class SizeCrud(BaseCrud[Size]):
     model = Size
@@ -106,7 +107,7 @@ class SizeCrud(BaseCrud[Size]):
         cls,
         session: AsyncSession,
         product_id: str,
-        size: int,
+        size: ASizes,
         quantity: int,
     ):
         """Уменьшить количество при заказе"""

@@ -13,8 +13,6 @@ from shoersshopapi.api.v1.schemas import (
 )
 
 from shoersshopapi.api.v1.validators.http import (
-    oauth2_scheme,
-    get_current_auth_user,
     RoleRequired,
 )
 
