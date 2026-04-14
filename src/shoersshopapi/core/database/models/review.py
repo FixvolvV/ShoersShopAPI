@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import (
-    text
+    func
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -9,7 +11,9 @@ from sqlalchemy.orm import (
 from .base import Base
 from .mixin import UserRelationMixin
 
-from shoersshopapi.core.utils.enum import Rating
+def get_current_df() -> datetime:
+    df = datetime.now(tz=timezone.utc)
+    return df.replace(tzinfo=None)
 
 
 class Review(UserRelationMixin, Base):
@@ -17,4 +21,8 @@ class Review(UserRelationMixin, Base):
     _user_load_strategy = "raise"
 
     comment_text: Mapped[str]
-    rating: Mapped[Rating] = mapped_column(default=Rating.very_good,  server_default=text("'very_good'"))
+    rating: Mapped[int] = mapped_column(nullable=False, default=5, server_default="5")
+    created_at: Mapped[datetime] = mapped_column(
+        default=get_current_df,
+        server_default=func.now()
+    )

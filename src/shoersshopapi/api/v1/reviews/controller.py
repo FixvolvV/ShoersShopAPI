@@ -59,7 +59,7 @@ async def get_reviews(
         AsyncSession,
         Depends(database.get_session)
     ],
-    rating: Rating | None = None,
+    rating: int | None = None,
     page: Annotated[int, Query(ge=1)] = 1,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
 ):

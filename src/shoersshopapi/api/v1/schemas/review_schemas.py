@@ -1,17 +1,21 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 from typing import (
     Optional,
     Sequence
 )
-
-from shoersshopapi.core.utils.enum import Rating
 
 #-------------- Review Schemes -------------- 
 
 class ReviewSchema(BaseModel):
 
     comment_text: str
-    rating: Rating | str
+    rating: int
+
+    @model_validator(mode='after')
+    def raiting_value_check(self):
+        if self.rating not in range(1,6):
+            raise ValueError("Raiting out of range")
+        return self
 
 class ReviewWithId(ReviewSchema):
 
@@ -22,7 +26,13 @@ class ReviewWithId(ReviewSchema):
 
 class ReviewUpdate(BaseModel):
     comment_text: str | None = None
-    rating: Rating | None = None
+    rating: int | None = None
+
+    @model_validator(mode='after')
+    def raiting_value_check(self):
+        if self.rating != None and self.rating not in range(1,6):
+            raise ValueError("Raiting out of range")
+        return self
 
 class ReviewsSchema(BaseModel):
 
@@ -35,4 +45,4 @@ class ReviewFilter(BaseModel):
     id: str | None = None
     user_id: str | None = None
     comment_text: str | None = None
-    rating: Rating | str | None = None
+    rating: int | None = None
