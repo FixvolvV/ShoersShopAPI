@@ -4,7 +4,7 @@ from io import BytesIO
 
 from shoersshopapi.core.minio import s3_client
 
-from shoersshopapi.core.utils.enum import Color, Category, ASizes, Rating
+from shoersshopapi.core.utils.enum import Color, Category, ASizes
 
 router = APIRouter(tags=["Streams"])
 
@@ -58,10 +58,3 @@ async def get_category_list():
 async def get_color_list():
 
     return [{"label": item.name, "value": item.value} for item in Color]
-
-@router.get(
-    "/filters/raiting",
-)
-async def get_raiting_list():
-
-    return [{"label": item.name, "value": item.value} for item in Rating]

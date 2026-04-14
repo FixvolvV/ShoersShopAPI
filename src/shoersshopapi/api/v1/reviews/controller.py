@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shoersshopapi.core.database import database
-from shoersshopapi.core.utils.enum import Rating
 from .crud import ReviewCrud
 from shoersshopapi.api.v1.schemas import (
     ReviewSchema,

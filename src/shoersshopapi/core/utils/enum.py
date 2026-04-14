@@ -10,13 +10,6 @@ class Status(StrEnum):
     delivered = "delivered"
     cancelled = "cancelled"
 
-class Rating(StrEnum):
-    very_bad = "very_bad"
-    bad = "bad"
-    normal = "normal"
-    good = "good"
-    very_good = "very_good"
-
 class Color(StrEnum):
     black = "чёрный"
     white = "белый"
