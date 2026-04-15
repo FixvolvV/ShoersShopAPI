@@ -1,5 +1,6 @@
 # shoersshopapi/api/v1/review/crud.py
 
+import datetime
 from typing import Union
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,7 +9,7 @@ from fastapi import HTTPException, status
 
 from shoersshopapi.api.v1.basecrud import BaseCrud
 from shoersshopapi.api.v1.utils import gen_uuid
-from shoersshopapi.core.database.models import Review
+from shoersshopapi.core.database.models.review import Review, get_current_df
 
 from pydantic import BaseModel
 
@@ -50,6 +51,7 @@ class ReviewCrud(BaseCrud[Review]):
             user_id=user_id,
             comment_text=data.comment_text,
             rating=data.rating.value if hasattr(data.rating, 'value') else data.rating, # pyright: ignore
+            created_at=get_current_df()
         )
 
         review = await cls.add(session, review_data)

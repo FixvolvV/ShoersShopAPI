@@ -79,6 +79,7 @@ async def get_reviews(
             "rating": review.rating,
             "surname": review.user.surname,
             "name": review.user.name,
+            "created_at": review.created_at
         })
 
     return result

@@ -3,6 +3,7 @@ from typing import (
     Optional,
     Sequence
 )
+from datetime import datetime
 
 #-------------- Review Schemes -------------- 
 
@@ -10,6 +11,7 @@ class ReviewSchema(BaseModel):
 
     comment_text: str
     rating: int
+    created_at: datetime
 
     @model_validator(mode='after')
     def raiting_value_check(self):
@@ -27,6 +29,7 @@ class ReviewWithId(ReviewSchema):
 class ReviewUpdate(BaseModel):
     comment_text: str | None = None
     rating: int | None = None
+    created_at: datetime | None = None
 
     @model_validator(mode='after')
     def raiting_value_check(self):
@@ -46,3 +49,5 @@ class ReviewFilter(BaseModel):
     user_id: str | None = None
     comment_text: str | None = None
     rating: int | None = None
+    created_at: datetime | None = None
+    
