@@ -38,13 +38,6 @@ class ReviewCrud(BaseCrud[Review]):
             .filters(ReviewFilter(user_id=user_id))
             .build()
         )
-        existing = await cls.find_one_or_none(session, stmt)
-
-        if existing:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="You already left a review",
-            )
 
         review_data = ReviewWithId(
             id=gen_uuid(),
