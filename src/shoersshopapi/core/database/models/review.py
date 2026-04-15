@@ -10,11 +10,7 @@ from sqlalchemy.orm import (
 
 from .base import Base
 from .mixin import UserRelationMixin
-
-def get_current_df() -> datetime:
-    df = datetime.now(tz=timezone.utc)
-    return df.replace(tzinfo=None)
-
+from shoersshopapi.core.utils.utils import get_current_df
 
 class Review(UserRelationMixin, Base):
     _user_back_populates = "reviews"

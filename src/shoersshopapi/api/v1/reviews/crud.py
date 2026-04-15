@@ -5,11 +5,11 @@ from typing import Union
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from fastapi import HTTPException, status
 
 from shoersshopapi.api.v1.basecrud import BaseCrud
 from shoersshopapi.api.v1.utils import gen_uuid
-from shoersshopapi.core.database.models.review import Review, get_current_df
+from shoersshopapi.core.database.models import Review
+from shoersshopapi.core.utils.utils import get_current_df
 
 from pydantic import BaseModel
 
