@@ -1,3 +1,5 @@
+import hashlib
+
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -109,6 +111,43 @@ class MinioClient:
                 return True
             except ClientError:
                 return False
+
+    async def generate_presigned_url_for_redirect(
+        self, 
+        file_path: str, 
+        expires_in: int = 3600
+    ) -> str:
+        async with self.get_client() as client:
+            # Проверяем существование файла одним запросом
+            try:
+                await client.head_object(
+                    Bucket=self.bucket_name,
+                    Key=file_path,
+                )
+            except ClientError as e:
+                if e.response['Error']['Code'] == '404':
+                    raise FileNotFoundError(f"File not found: {file_path}")
+                raise
+            
+            # Генерируем presigned URL
+            url = await client.generate_presigned_url(
+                "get_object",
+                Params={
+                    "Bucket": self.bucket_name,
+                    "Key": file_path,
+                    # Можно добавить дополнительные параметры
+                    # "ResponseCacheControl": "public, max-age=31536000",
+                },
+                ExpiresIn=expires_in,
+            )
+            return url
+
+    def get_file_etag(self, file_path: str) -> str:
+        """
+        Генерирует ETag для файла на основе пути
+        Полезно для HTTP кэширования
+        """
+        return hashlib.md5(file_path.encode()).hexdigest()
 
 
 s3_client = MinioClient(

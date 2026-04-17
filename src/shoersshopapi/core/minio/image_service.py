@@ -57,8 +57,31 @@ class ImageService:
         return await ImageService.upload_image(file, folder, id)
 
     @staticmethod
-    async def get_image_url(file_path: str) -> str:
-        return await s3_client.get_file_url(file_path)
+    async def get_image_url(file_path: str,  expires_in: int = 3600) -> str:
+        return await s3_client.get_file_url(file_path, expires_in)
 
+
+    @staticmethod
+    async def get_redirect_url(file_path: str, expires_in: int = 3600) -> str:
+        try:
+            return await s3_client.generate_presigned_url_for_redirect(
+                file_path, 
+                expires_in
+            )
+        except FileNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Изображение не найдено"
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Ошибка при получении URL: {str(e)}"
+            )
+
+    @staticmethod
+    def get_image_etag(file_path: str) -> str:
+
+        return s3_client.get_file_etag(file_path)
 
 image_service = ImageService()

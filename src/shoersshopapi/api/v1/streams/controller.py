@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import StreamingResponse
-from io import BytesIO
+from typing import Annotated, Optional
 
-from shoersshopapi.core.minio import s3_client
+from fastapi import APIRouter, HTTPException, status, Header, Response
+
+from shoersshopapi.core.minio import image_service
 
 from shoersshopapi.core.utils.enum import Color, Category, ASizes
 
@@ -16,27 +16,53 @@ FILENOTFOUND = HTTPException(
 @router.get(
     "/images",
 )
-async def get_file(path: str):
+async def get_image_redirect(
+    path: str,
+    if_none_match: Annotated[
+        Optional[str],
+        Header()
+    ]
+):
 
-    exists = await s3_client.file_exists(path)
-    if not exists:
-        raise FILENOTFOUND
-
-    file_data = await s3_client.get_file(path)
-
-    ext = path.rsplit(".", 1)[-1].lower()
-    content_types = {
-        "png": "image/png",
-        "jpg": "image/jpeg",
-        "jpeg": "image/jpeg",
-        "webp": "image/webp",
-    }
-    content_type = content_types.get(ext, "application/octet-stream")
-
-    return StreamingResponse(
-        BytesIO(file_data),
-        media_type=content_type,
-    )
+    # Валидация пути (безопасность)
+    if ".." in path or path.startswith("/") or len(path) > 255:
+        raise HTTPException(
+            status_code=400, 
+            detail="Некорректный путь к файлу"
+        )
+    
+    # Генерируем ETag для кэширования
+    etag = f'"{image_service.get_image_etag(path)}"'
+    
+    # Если клиент уже имеет актуальную версию
+    if if_none_match == etag:
+        return Response(status_code=304)  # Not Modified
+    
+    try:
+        # Получаем presigned URL (1 час действия)
+        presigned_url = await image_service.get_redirect_url(
+            file_path=path,
+            expires_in=3600  # 1 час
+        )
+        
+        # Редиректим на S3
+        return Response(
+            status_code=307,  # Temporary Redirect (сохраняет метод GET)
+            headers={
+                "Location": presigned_url,
+                "Cache-Control": "public, max-age=3000",  # 50 минут (меньше чем expires_in)
+                "ETag": etag,
+                "X-Redirect-Type": "s3-presigned",
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Внутренняя ошибка сервера {e}"
+        )
 
 @router.get(
     "/filters/sizes",
