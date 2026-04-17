@@ -18,7 +18,8 @@ dependencies = [
     "passlib[bcrypt] (>=1.7.4,<2.0.0)",
     "aioboto3 (>=15.5.0,<16.0.0)",
     "requests (>=2.33.0,<3.0.0)",
-    "alembic-postgresql-enum (>=1.10.0,<2.0.0)"
+    "alembic-postgresql-enum (>=1.10.0,<2.0.0)",
+    "pillow (>=12.2.0,<13.0.0)"
 ]
 
 
