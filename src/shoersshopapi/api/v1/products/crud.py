@@ -11,7 +11,6 @@ from shoersshopapi.api.v1.utils import gen_uuid
 from shoersshopapi.core.database.models import Product, Brand, Size
 from shoersshopapi.core.minio.image_service import image_service
 
-from shoersshopapi.core.settings import settings
 
 from shoersshopapi.api.v1.schemas import (
     BrandFilter,
@@ -22,8 +21,6 @@ from shoersshopapi.api.v1.schemas import (
 
 class ProductCrud(BaseCrud[Product]):
     model = Product
-
-    FOLDER = settings.minio.bucket_name
 
     # === CREATE ===
 
@@ -51,7 +48,23 @@ class ProductCrud(BaseCrud[Product]):
             .load(Product.brand, Product.sizes)
             .build()
         )
-        return await cls.find_one_or_none(session, stmt)
+
+        item = await cls.find_one_or_none(session, stmt)
+
+        if item is None:
+            raise
+
+        if item.logo is None:
+            return item
+
+        item.logo = await image_service.get_image_url(item.logo)
+
+        if item.brand.brand_logo is None: #pyright: ignore
+            return item
+ 
+        item.brand.brand_logo = await image_service.get_image_url(item.brand.brand_logo) #pyright: ignore
+
+        return item
 
     @classmethod
     async def get_all(
@@ -75,7 +88,26 @@ class ProductCrud(BaseCrud[Product]):
             .offset(offset)
             .build()
         )
-        return await cls.find_all(session, stmt)
+
+        result = await cls.find_all(session, stmt)
+
+
+        if result is None:
+            raise
+
+        for item in result:
+            if item.logo is None:
+                continue
+            
+            item.logo = await image_service.get_image_url(item.logo)
+        
+            if item.brand.brand_logo is None:
+                continue
+
+            if not item.brand.brand_logo.startswith("http"):
+                item.brand.brand_logo = await image_service.get_image_url(item.brand.brand_logo)
+
+        return result 
 
     # === UPDATE ===
 
@@ -121,13 +153,13 @@ class ProductCrud(BaseCrud[Product]):
         if logo:
 
             if not product.logo: 
-                new_logo_path = await image_service.upload_image(logo, cls.FOLDER + "/product", product.id)
+                new_logo_path = await image_service.upload_image(logo, "/product", product.id)
                 
             else:
                 new_logo_path = await image_service.replace_image(
                     old_path=product.logo,
                     file=logo,
-                    folder=cls.FOLDER + "/product",
+                    folder="/product",
                     id=product.id,
                 )
 

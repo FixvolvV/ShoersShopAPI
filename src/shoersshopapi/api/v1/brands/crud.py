@@ -48,7 +48,12 @@ class BrandCrud(BaseCrud[Brand]):
     @classmethod
     async def get_by_id(cls, session: AsyncSession, brand_id: str):
         stmt = cls.stmt().filters(BrandFilter(id=brand_id)).build()
-        return await cls.find_one_or_none(session, stmt)
+
+        item = await cls.find_one_or_none(session, stmt)
+ 
+        item.brand_logo = await image_service.get_image_url(item.brand_logo) #pyright: ignore
+
+        return item
 
     @classmethod
     async def get_all(
@@ -65,7 +70,21 @@ class BrandCrud(BaseCrud[Brand]):
             .offset(offset)
             .build()
         )
-        return await cls.find_all(session, stmt)
+
+        result = await cls.find_all(session, stmt)
+    
+        if result is None:
+            raise
+
+        for item in result:
+        
+            if item.brand_logo is None:
+                continue
+
+            if not item.brand_logo.startswith("http"):
+                item.brand_logo = await image_service.get_image_url(item.brand_logo)
+
+        return result
 
     # === UPDATE ===
 
