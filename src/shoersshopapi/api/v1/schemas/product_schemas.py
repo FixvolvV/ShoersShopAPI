@@ -40,12 +40,12 @@ class ProductWithAll(ProductWithBrand):
     model_config = ConfigDict(from_attributes=True)
 
     sizes: List[SizeWithId] | None = None
-    avaliable_sizes: List[SizeWithId] | None = None
+    available_sizes: List[SizeWithId] | None = None
 
     @model_validator(mode="after")
     def filter_available_sizes(self):
         if self.sizes:
-            self.avaliable_sizes = [size for size in self.sizes if size.count > 0]
+            self.available_sizes = [size for size in self.sizes if size.count > 0]
         return self
     
 class ProductUpdate(BaseModel):

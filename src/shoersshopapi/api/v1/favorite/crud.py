@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from shoersshopapi.core.database.models import Favorite, Product
+from shoersshopapi.core.minio.image_service import image_service
+
 from shoersshopapi.api.v1.utils import gen_uuid
 from shoersshopapi.api.v1.basecrud import BaseCrud
 from shoersshopapi.api.v1.schemas import FavoriteWithId
@@ -31,19 +33,37 @@ class FavoriteCrud(BaseCrud[Favorite]):
         cls,
         session: AsyncSession,
         user_id: str,
-    ) -> list[Favorite]:
+    ):
 
-        query = (
+        stmt = (
             select(Favorite)
             .where(Favorite.user_id == user_id)
             .options(
-                selectinload(Favorite.product)
-                .selectinload(Product.brand)
+                selectinload(Favorite.product).options(
+                selectinload(Product.brand),
+                selectinload(Product.sizes)
+                )
             )
         )
 
-        result = await session.execute(query)
-        return list(result.scalars().all())
+        result = await cls.find_all(session, stmt)
+
+        if result is None:
+            raise
+
+        for item in result:
+            if item.product.logo is None:
+                continue
+            
+            item.product.logo = await image_service.get_image_url(item.product.logo)
+        
+            if item.product.brand.brand_logo is None:
+                continue
+
+            if not item.product.brand.brand_logo.startswith("http"):
+                item.product.brand.brand_logo = await image_service.get_image_url(item.product.brand.brand_logo)
+
+        return result
 
     # === Добавить товар в избранное ===
 

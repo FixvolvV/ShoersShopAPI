@@ -55,6 +55,7 @@ async def get_favorites(
     items = []
     for favorite in favorites:
         product = favorite.product
+
         items.append(
             FavoriteProductResponse(
                 id=favorite.id,
