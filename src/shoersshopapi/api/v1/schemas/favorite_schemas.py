@@ -37,7 +37,8 @@ class FavoriteProductResponse(BaseModel):
     title: str
     price: float
     color: str
-    product_logo: str | None = None
+    logo: str | None = None
+    avg_grade: float
     brand_logo: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

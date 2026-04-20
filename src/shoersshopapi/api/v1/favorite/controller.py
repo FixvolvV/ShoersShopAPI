@@ -61,7 +61,8 @@ async def get_favorites(
                 title=product.title,
                 price=product.price,
                 color=product.color,
-                product_logo=product.logo,
+                logo=product.logo,
+                avg_grade=product.avg_grade,
                 brand_logo=product.brand.brand_logo if product.brand else None,
             )
         )
