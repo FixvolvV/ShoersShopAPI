@@ -13,6 +13,7 @@ class MinioClient:
     def __init__(
         self,
         endpoint_url: str,
+        external_endpoint: str,
         access_key: str,
         secret_key: str,
         bucket_name: str,
@@ -23,6 +24,7 @@ class MinioClient:
         self.region_name = region_name
         self.bucket_name = bucket_name
         self.endpoint_url = endpoint_url
+        self.external_endpoint = external_endpoint
 
     @asynccontextmanager
     async def get_client(self) -> AsyncGenerator:
@@ -55,4 +57,5 @@ s3_client = MinioClient(
     secret_key=settings.minio.secret_key,
     bucket_name=settings.minio.bucket_name,
     region_name=settings.minio.region_name,
+    external_endpoint=settings.minio.external_endpoint_url
 )

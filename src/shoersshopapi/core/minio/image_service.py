@@ -69,7 +69,7 @@ class ImageService:
     @staticmethod
     async def get_image_url(file_path: str,  expires_in: int = 3600) -> str:
         async with s3_client.get_client() as client:
-            return await client.generate_presigned_url(
+            url = await client.generate_presigned_url(
             ClientMethod='get_object',
             Params={
                 'Bucket': settings.minio.bucket_name,
@@ -77,6 +77,10 @@ class ImageService:
             },
             ExpiresIn=expires_in
         )
+
+        url = url.replace(s3_client.endpoint_url, s3_client.external_endpoint)
+
+        return url
 
     @staticmethod
     def get_image_etag(file_path: str) -> str:

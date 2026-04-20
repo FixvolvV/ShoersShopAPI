@@ -20,6 +20,7 @@ class DatabaseConfig(BaseModel):
 
 class MinioConfig(BaseModel):
     endpoint_url: str
+    external_endpoint_url: str
     access_key: str
     secret_key: str
     bucket_name: str
