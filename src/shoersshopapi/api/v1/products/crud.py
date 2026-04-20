@@ -153,13 +153,13 @@ class ProductCrud(BaseCrud[Product]):
         if logo:
 
             if not product.logo: 
-                new_logo_path = await image_service.upload_image(logo, "/product", product.id)
+                new_logo_path = await image_service.upload_image(logo, "product", product.id)
                 
             else:
                 new_logo_path = await image_service.replace_image(
                     old_path=product.logo,
                     file=logo,
-                    folder="/product",
+                    folder="product",
                     id=product.id,
                 )
 
