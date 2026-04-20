@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from shoersshopapi.api.v1.schemas.product_schemas import ProductWithAll
 from shoersshopapi.core.database import database
 from shoersshopapi.api.v1.schemas import (
     FavoriteAdd,
@@ -57,14 +58,8 @@ async def get_favorites(
         items.append(
             FavoriteProductResponse(
                 id=favorite.id,
-                product_id=product.id,
-                title=product.title,
-                price=product.price,
-                color=product.color,
-                logo=product.logo,
-                avg_grade=product.avg_grade,
-                brand_logo=product.brand.brand_logo if product.brand else None,
-            )
+                product=ProductWithAll.model_validate(product)
+                )
         )
 
     return FavoriteListResponse(

@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
+from .product_schemas import ProductWithAll
+
 #-------------- Favorite Schemes -------------- 
 
 class FavoriteSchema(BaseModel):
@@ -33,13 +35,7 @@ class FavoriteFilter(BaseModel):
 
 class FavoriteProductResponse(BaseModel):
     id: str
-    product_id: str
-    title: str
-    price: float
-    color: str
-    logo: str | None = None
-    avg_grade: float
-    brand_logo: str | None = None
+    product: ProductWithAll
 
     model_config = ConfigDict(from_attributes=True)
 

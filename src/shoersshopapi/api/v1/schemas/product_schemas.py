@@ -11,6 +11,9 @@ from .size_schemas import SizeWithId
 #-------------- Product Schemas -------------- 
 
 class ProductSchema(BaseModel):
+
+    model_config = ConfigDict(from_attributes=True)
+
     brand_id: str
     title: str
     price: float
@@ -21,12 +24,21 @@ class ProductSchema(BaseModel):
     avg_grade: float
 
 class ProductWithId(ProductSchema):
+
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
 
 class ProductWithBrand(ProductWithId):
+
+    model_config = ConfigDict(from_attributes=True)
+
     brand: BrandWithId
 
 class ProductWithAll(ProductWithBrand):
+
+    model_config = ConfigDict(from_attributes=True)
+
     sizes: List[SizeWithId] | None = None
     avaliable_sizes: List[SizeWithId] | None = None
 

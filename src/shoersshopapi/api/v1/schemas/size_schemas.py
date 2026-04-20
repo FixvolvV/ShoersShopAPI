@@ -4,11 +4,17 @@ from typing import List
 from shoersshopapi.core.utils.enum import ASizes
 
 class SizeSchema(BaseModel):
+
+    model_config = ConfigDict(from_attributes=True)
+
     product_id: str
     size: ASizes
     count: int
 
 class SizeWithId(SizeSchema):
+
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
 
 class SizeUpdate(BaseModel):
