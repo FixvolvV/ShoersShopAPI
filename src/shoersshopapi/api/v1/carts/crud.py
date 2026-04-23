@@ -7,7 +7,9 @@ from fastapi import HTTPException, status
 
 from shoersshopapi.api.v1.basecrud import BaseCrud
 from shoersshopapi.api.v1.utils import gen_uuid
+
 from shoersshopapi.core.database.models import Cart, CartItem, Product, Size
+from shoersshopapi.core.minio.image_service import image_service
 
 from  shoersshopapi.api.v1.schemas import (
     CartItemAdd,
@@ -46,19 +48,39 @@ class CartCrud(BaseCrud[Cart]):
     @classmethod
     async def get_cart_with_items(cls, session: AsyncSession, user_id: str):
 
-        query = (
+        stmt = (
             select(Cart)
             .where(Cart.user_id == user_id)
             .options(
                 selectinload(Cart.cart_items)
                 .selectinload(CartItem.items)
-                .selectinload(Size.product) 
+                .selectinload(Size.product)
                 .selectinload(Product.brand)
             )
         )
 
-        result = await session.execute(query)
-        cart = result.scalar_one_or_none()
+        cart = await cls.find_one_or_none(session, stmt)
+
+        if not cart:
+            return []
+
+        for cart_item in cart.cart_items:
+
+            if not cart_item.items or not cart_item.items.product:
+                continue
+            
+            product = cart_item.items.product
+            
+            if product.logo and not product.logo.startswith("http"):
+                product.logo = await image_service.get_image_url(product.logo)
+            
+            if product.brand.brand_logo is None:
+                continue
+
+            if not product.brand.brand_logo.startswith("http"):
+                product.brand.brand_logo = await image_service.get_image_url(
+                    product.brand.brand_logo
+                )
 
         return cart
 

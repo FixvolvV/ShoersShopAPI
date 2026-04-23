@@ -12,7 +12,8 @@ from shoersshopapi.api.v1.schemas import (
     CartItemAdd,
     CartItemUpdate,
     CartItemResponse,
-    UserWithId
+    UserWithId,
+    ProductWithBrand
 )
 
 from shoersshopapi.api.v1.validators.http import (
@@ -58,14 +59,10 @@ async def get_cart(
 
         items.append({
             "id": cart_item.id,
-            "size_id": size.id,
-            "product_id": product.id,
             "quantity": cart_item.quantity,
-            "title": product.title,
-            "price": product.price,
-            "color": product.color,
+            "size_id": size.id,
             "size": size.size,
-            "brand_logo": product.brand.brand_logo if product.brand else None,
+            "product": ProductWithBrand.model_validate(product)
         })
 
     return {

@@ -14,6 +14,7 @@ from shoersshopapi.api.v1.carts.crud import CartCrud
 
 from shoersshopapi.core.database.models import Order, OrderItem, Address, Size
 from shoersshopapi.core.utils.enum import Status
+from shoersshopapi.core.minio.image_service import image_service
 
 from  shoersshopapi.api.v1.schemas import OrderCreate, OrderWithId, OrderUpdate, OrderFilter
 
@@ -104,7 +105,7 @@ class OrderCrud(BaseCrud[Order]):
         session: AsyncSession,
         order_id: str,
     ):
-        query = (
+        stmt = (
             select(Order)
             .where(Order.id == order_id)
             .options(
@@ -113,8 +114,25 @@ class OrderCrud(BaseCrud[Order]):
                 selectinload(Order.address),
             )
         )
-        result = await session.execute(query)
-        return result.scalar_one_or_none()
+        
+        result = await cls.find_all(session, stmt)
+
+        if result is None:
+            raise
+
+        for item in result:
+            if item.product.logo is None:
+                continue
+            
+            item.product.logo = await image_service.get_image_url(item.product.logo)
+        
+            if item.product.brand.brand_logo is None:
+                continue
+
+            if not item.product.brand.brand_logo.startswith("http"):
+                item.product.brand.brand_logo = await image_service.get_image_url(item.product.brand.brand_logo)
+
+        return result
 
     @classmethod
     async def get_user_orders(
