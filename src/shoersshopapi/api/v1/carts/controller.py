@@ -44,14 +44,13 @@ async def get_cart(
     cart = await CartCrud.get_cart_with_items(session, user.id)
 
     if not cart:
-        
         return {"id": None, "user_id": user.id, "items": [], "total_amount": 0}
 
     # Формируем ответ с информацией о товарах
     items = []
-    total_amount = 0
+    total_amount = 0 
 
-    for cart_item in cart.cart_items:
+    for cart_item in cart.cart_items: #pyright: ignore
         size = cart_item.items
         product = size.product
         item_total = product.price * cart_item.quantity
@@ -62,12 +61,16 @@ async def get_cart(
             "quantity": cart_item.quantity,
             "size_id": size.id,
             "size": size.size,
-            "product": ProductWithBrand.model_validate(product)
+            "product_id": product.id,
+            "article": product.article,
+            "logo": product.logo,
+            "price": product.price,
+            "title": product.title
         })
 
     return {
-        "id": cart.id,
-        "user_id": cart.user_id,
+        "id": cart.id, #pyright: ignore
+        "user_id": cart.user_id, #pyright: ignore
         "items": items,
         "total_amount": total_amount,
     }
